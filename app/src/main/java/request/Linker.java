@@ -11,7 +11,7 @@ public final class Linker {
     private static final String APP_ID = "DmitryNo-a46d-46a8-b0ba-755c3fec79cc";
 
     private static final String BASE_FIND_URL = "http://svcs.ebay.com/services/search/FindingService/v1";
-    private static final String BASE_SHOP_URL = "http://open.api.ebay.com/shopping?";
+    private static final String BASE_SHOP_URL = "http://open.api.ebay.com/shopping";
     //Consts for FIND method
     private static final String PARAM_METHOD = "OPERATION-NAME";
     private static final String PARAM_VERSION = "SERVICE-VERSION";
