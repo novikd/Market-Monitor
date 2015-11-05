@@ -18,7 +18,7 @@ public final class Linker {
     private static final String PARAM_APPID = "SECURITY-APPNAME";
     private static final String PARAM_FORMAT = "RESPONSE-DATA-FORMAT";
     private static final String PARAM_KEYS = "keywords";
-    //Consts for SHOP mothed
+    //Consts for SHOP mothod
     private static final String PARAM_CALL = "callname";
     private static final String PARAM_RESPONSE = "responseencoding";
     private static final String PARAM_VER = "version";

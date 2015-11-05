@@ -9,4 +9,8 @@ public class Target {
     Target(String itemName) {
         name = itemName;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -16,9 +16,14 @@ import target.Target;
 public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder> implements View.OnClickListener {
 
     private final LayoutInflater layoutInflater;
+    private TargetSelectedListener targetSelectedListener;
 
     public TargetsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
+    }
+
+    public void setTargetSelectedListener(TargetSelectedListener listener) {
+        targetSelectedListener = listener;
     }
 
     //TODO: finish realization of layout item_target
@@ -50,6 +55,7 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
 
         public TargetViewHolder(View itemView) {
             super(itemView);
+
             targetNameView = (TextView) itemView.findViewById(R.id.target_name);
         }
     }
