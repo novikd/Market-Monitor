@@ -8,11 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.ifmo.android_2015.marketmonitor.R;
+import target.Target;
 
 /**
  * Created by novik on 05.11.15.
  */
-public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder> {
+public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder> implements View.OnClickListener {
 
     private final LayoutInflater layoutInflater;
 
@@ -20,21 +21,28 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         layoutInflater = LayoutInflater.from(context);
     }
 
-    //TODO: make a layout item_target and add target_name there
+    //TODO: finish realization of layout item_target
     @Override
     public TargetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = layoutInflater.inflate(R.layout.item_target, parent, false);
+        view.setOnClickListener(this);
         return new TargetViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(TargetViewHolder holder, int position) {
-
+        //I can't implement it, because list of targets is unreachable
     }
 
+    //TODO: This method should return number of targets
     @Override
     public int getItemCount() {
         return 0;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {
