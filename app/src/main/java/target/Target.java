@@ -6,7 +6,7 @@ package target;
 public class Target {
     public String name;
 
-    Target(String itemName) {
+    public Target(String itemName) {
         name = itemName;
     }
 
