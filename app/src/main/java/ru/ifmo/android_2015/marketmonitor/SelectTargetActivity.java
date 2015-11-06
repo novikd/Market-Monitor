@@ -11,13 +11,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.List;
+
+import db.FetchTargetsTask;
+import db.FetchTargetsTaskClient;
+import db.MarketMonitorDBHelper;
 import list.TargetSelectedListener;
 import list.TargetsRecyclerAdapter;
 import target.Target;
 
-public class SelectTargetActivity extends AppCompatActivity implements TargetSelectedListener {
+public class SelectTargetActivity extends AppCompatActivity implements TargetSelectedListener,
+        FetchTargetsTaskClient {
 
     private RecyclerView recyclerView;
+
+    public void targetsAreReady(List<Target> targets) {
+        Log.d("SelectTargetActivity", String.valueOf(targets.size()));
+        for (Target target: targets) {
+            Log.d("SelectTargetActivity", target.getName());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
