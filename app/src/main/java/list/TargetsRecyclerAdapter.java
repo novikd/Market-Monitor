@@ -7,16 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
+import db.FetchTargetsTaskClient;
 import ru.ifmo.android_2015.marketmonitor.R;
 import target.Target;
 
 /**
  * Created by novik on 05.11.15.
  */
-public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder> implements View.OnClickListener {
+public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder>
+        implements View.OnClickListener, FetchTargetsTaskClient {
 
     private final LayoutInflater layoutInflater;
     private TargetSelectedListener targetSelectedListener;
+    private List<Target> targets;
 
     public TargetsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
@@ -26,7 +31,7 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         targetSelectedListener = listener;
     }
 
-    //TODO: finish realization of layout item_target
+    //TODO: finish realization of layout item_target (it seems that it is ready)
     @Override
     public TargetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = layoutInflater.inflate(R.layout.item_target, parent, false);
@@ -36,18 +41,32 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
 
     @Override
     public void onBindViewHolder(TargetViewHolder holder, int position) {
-        //I can't implement it, because list of targets is unreachable
+        Target target = targets.get(position);
+
+        holder.targetNameView.setText(target.name);
+        holder.targetNameView.setTag(R.id.tag_target, target);
     }
 
-    //TODO: This method should return number of targets
     @Override
     public int getItemCount() {
-        return 0;
+        if (targets != null) {
+            return targets.size();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public void onClick(View v) {
+        Target target = (Target) v.getTag(R.id.tag_target);
+        if (target != null && targetSelectedListener != null) {
+            targetSelectedListener.onTargetSelected(target);
+        }
+    }
 
+    @Override
+    public void targetsAreReady(List<Target> targets) {
+        this.targets = targets;
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {
