@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Market Monitor</string>
+    <string name="title_activity_add_target">AddTargetActivity</string>
+    <string name="add_target_hint">Input your target</string>
+    <string name="pick_category">Pick a category:</string>
+    <string name="add">Add</string>
 </resources>
