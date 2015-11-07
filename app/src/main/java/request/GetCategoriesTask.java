@@ -57,11 +57,7 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, DownloadState> {
     @Override
     public void onPostExecute(DownloadState downloadState) {
         state = downloadState;
-        if (downloadState == DownloadState.DONE) {
-            updateClient();
-        } else {
-            Log.e(TAG, "Failed to fetch categories");
-        }
+        updateClient();
     }
 
     //called on the main thread

@@ -1,6 +1,7 @@
 package ru.ifmo.android_2015.marketmonitor;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,11 +21,13 @@ import org.w3c.dom.Text;
 import java.util.List;
 import java.util.Objects;
 
+import db.MarketMonitorDBHelper;
 import list.CategoriesRecyclerAdapter;
 import list.RecyclerDividerDecorator;
 import request.GetCategoriesTask;
 import request.GetCategoriesTaskClient;
 import target.Category;
+import target.Target;
 
 public class AddTargetActivity extends AppCompatActivity
                                 implements GetCategoriesTaskClient {
@@ -113,7 +116,26 @@ public class AddTargetActivity extends AppCompatActivity
             Toast.makeText(this, "You need to specify target!", Toast.LENGTH_SHORT).show();
         } else {
             //TODO: give the new target back to the caller
-            //TODO: save the new target to the database
+
+            new AddTargetTask(this).execute(new Target(textTarget.getText().toString()));
+        }
+    }
+
+    static class AddTargetTask extends AsyncTask<Target, Void, Void> {
+        AddTargetActivity activity;
+
+        public AddTargetTask(AddTargetActivity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public Void doInBackground(Target ... params) {
+            MarketMonitorDBHelper helper = new MarketMonitorDBHelper(activity);
+            helper.addTarget(params[0]);
+
+            Log.d(TAG, "New target saved");
+
+            return null;
         }
     }
 
