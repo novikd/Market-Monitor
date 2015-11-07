@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="ru.ifmo.android_2015.marketmonitor.AddTargetActivity">
+
+    <EditText
+        android:id = "@+id/textTarget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_target_hint" />
+
+    <TextView
+        android:id = "@+id/textCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_category"
+        android:padding="@dimen/small_padding"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <FrameLayout
+        android:id = "@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="100"
+        android:padding="@dimen/small_padding">
+
+        <android.support.v7.widget.RecyclerView
+            android:paddingLeft="@dimen/small_padding"
+            android:id = "@+id/categoriesList"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
+        <ProgressBar
+            android:id = "@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+
+    <Button
+        android:id = "@+id/buttonAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="12"
+        android:text="@string/add"
+        android:layout_gravity="center"
+        android:onClick="onAddClick"/>
+</LinearLayout>
