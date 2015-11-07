@@ -33,7 +33,7 @@ public final class Linker {
     private static final String FORMAT_JSON = "JSON";
 
     //URL to method which gives items which match keywords
-    public static URL createFindUrl(String request) throws MalformedURLException, UnsupportedEncodingException {
+    public static URL createFindUrl(String request) throws MalformedURLException {
         Uri uri = Uri.parse(BASE_FIND_URL).buildUpon()
                 .appendQueryParameter(PARAM_METHOD, METHOD_FIND)
                 .appendQueryParameter(PARAM_VERSION, VERSION_FIND)

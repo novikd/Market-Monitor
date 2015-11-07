@@ -1,5 +1,6 @@
 package ru.ifmo.android_2015.marketmonitor;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -84,6 +85,8 @@ public class SelectTargetActivity extends AppCompatActivity
     public void addNewTarget(MenuItem menuItem) {
         Log.i(TAG, "Add new button was clicked");
         //TODO: start the AddTargetActivity
+        Intent addTargetActivity = new Intent(this, AddTargetActivity.class);
+        startActivity(addTargetActivity);
     }
 
     private static final String TAG = "SELECT_TARGET_ACTIVITY";
