@@ -15,6 +15,7 @@ public class FetchTargetsTask extends AsyncTask<Void, Void, List<Target>> {
     private FetchTargetsTaskClient client;
     private Context context;
 
+    //TODO: try to forward results to the client on attach
     public FetchTargetsTask(FetchTargetsTaskClient client, Context context) {
         attachClient(client);
         this.context = context;

@@ -12,8 +12,12 @@ import target.Category;
 /**
  * Created by ruslanthakohov on 07/11/15.
  */
-public class GetCategoriesTask extends AsyncTask<Void, Void, List<Category>> {
+public class GetCategoriesTask extends AsyncTask<Void, Void, DownloadState> {
     private GetCategoriesTaskClient client;
+
+    private List<Category> categories = null;
+
+    private DownloadState state = DownloadState.DOWNLOADING;
 
     public GetCategoriesTask(GetCategoriesTaskClient client) {
         attachClient(client);
@@ -21,32 +25,65 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, List<Category>> {
 
     public void attachClient(GetCategoriesTaskClient client) {
         this.client = client;
+        publishProgress();
+
     }
 
     //TODO: fetch the list of categories
     @Override
-    public List<Category> doInBackground(Void ... params) {
-        ArrayList<Category> list = new ArrayList<>();
+    public DownloadState doInBackground(Void ... params) {
+        categories = new ArrayList<>();
 
-        list.add(new Category("Smartphones"));
-        list.add(new Category("Clothes"));
-        list.add(new Category("Perfume"));
-        list.add(new Category("Food"));
-        list.add(new Category("Accessories"));
-        list.add(new Category("Footwear"));
-        list.add(new Category("Tickets"));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ignore) {}
 
-        return list;
+        categories.add(new Category("Smartphones"));
+        categories.add(new Category("Clothes"));
+        categories.add(new Category("Perfume"));
+        categories.add(new Category("Food"));
+        categories.add(new Category("Accessories"));
+        categories.add(new Category("Footwear"));
+        categories.add(new Category("Tickets"));
+
+        return DownloadState.DONE;
     }
 
     @Override
-    public void onPostExecute(List<Category> categories) {
-        if (client != null) {
-            client.categoriesAreReady(categories);
+    public void onProgressUpdate(Void ... values) {
+        updateClient();
+    }
+
+    @Override
+    public void onPostExecute(DownloadState downloadState) {
+        state = downloadState;
+        if (downloadState == DownloadState.DONE) {
+            updateClient();
         } else {
-            Log.e(TAG, "GetCategoriesTask Client is not set!");
+            Log.e(TAG, "Failed to fetch categories");
+        }
+    }
+
+    //called on the main thread
+    private void updateClient() {
+        if (state == DownloadState.DONE) {
+            if (client != null) {
+                client.categoriesAreReady(categories);
+            } else {
+                Log.e(TAG, "GetCategoriesTask Client is not set!");
+            }
+        } else if (state == DownloadState.FAILED) {
+            if (client != null) {
+                client.downloadFailed();
+            } else {
+                Log.e(TAG, "GetCategoriesTask Client is not set!");
+            }
         }
     }
 
     private static final String TAG = "GetCategoriesTask";
+}
+
+enum DownloadState {
+    DOWNLOADING, DONE, FAILED
 }

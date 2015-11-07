@@ -25,7 +25,7 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
 
     public CategoriesRecyclerAdapter(Context context, List<Category> categories) {
         layoutInflater = LayoutInflater.from(context);
-        this.categories = categories;
+        updateDataSet(categories);
     }
 
     @Override
@@ -48,6 +48,10 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         } else {
             return 0;
         }
+    }
+
+    public void updateDataSet(List<Category> categories) {
+        this.categories = categories;
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.util.List;
+import java.util.Objects;
 
 import list.CategoriesRecyclerAdapter;
 import list.RecyclerDividerDecorator;
@@ -37,6 +38,8 @@ public class AddTargetActivity extends AppCompatActivity
 
     private GetCategoriesTask task = null;
 
+    private CategoriesRecyclerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +54,23 @@ public class AddTargetActivity extends AppCompatActivity
         //setup the RecyclerView
         categoriesList.setLayoutManager(new LinearLayoutManager(this));
         categoriesList.addItemDecoration(new RecyclerDividerDecorator(Color.DKGRAY));
+        adapter = new CategoriesRecyclerAdapter(this, categories);
+        categoriesList.setAdapter(adapter);
 
-        //TODO: handle configuration changes
+        if (savedInstanceState != null) {
+            task = (GetCategoriesTask) getLastCustomNonConfigurationInstance();
+        }
 
-        fetchCategories();
+        if (task == null) {
+            fetchCategories();
+        } else {
+            task.attachClient(this);
+        }
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return task;
     }
 
     /**
@@ -62,6 +78,7 @@ public class AddTargetActivity extends AppCompatActivity
      */
     private void fetchCategories() {
         task = new GetCategoriesTask(this);
+        Log.d(TAG, "Began fetching categories");
         task.execute();
     }
 
@@ -74,12 +91,20 @@ public class AddTargetActivity extends AppCompatActivity
 
         this.categories = categories;
 
-        //init the adapter for the RecyclerView
-        CategoriesRecyclerAdapter adapter = new CategoriesRecyclerAdapter(this, categories);
-        categoriesList.setAdapter(adapter);
+        adapter.updateDataSet(categories);
+        adapter.notifyDataSetChanged();
 
         //fetching completed, hide progress bar
         progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Implementation of GetCategoriesTaskClient interface
+     */
+    public void downloadFailed() {
+        progressBar.setVisibility(View.INVISIBLE);
+        //TODO: extract text to string resources
+        Toast.makeText(this, "Failed to load the categories", Toast.LENGTH_SHORT).show();
     }
 
     public void onAddClick(View view) {

@@ -9,4 +9,5 @@ import target.Category;
  */
 public interface GetCategoriesTaskClient {
     void categoriesAreReady(List<Category> categories);
+    void downloadFailed();
 }
