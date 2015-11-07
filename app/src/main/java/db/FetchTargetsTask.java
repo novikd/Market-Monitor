@@ -15,8 +15,9 @@ public class FetchTargetsTask extends AsyncTask<Void, Void, List<Target>> {
     private FetchTargetsTaskClient client;
     private Context context;
 
+    //TODO: try to forward results to the client on attach
     public FetchTargetsTask(FetchTargetsTaskClient client, Context context) {
-        this.client = client;
+        attachClient(client);
         this.context = context;
     }
 
@@ -26,6 +27,7 @@ public class FetchTargetsTask extends AsyncTask<Void, Void, List<Target>> {
         return helper.getAllTargets();
     }
 
+    //TODO: check that the client has been set
     @Override
     public void onPostExecute(List<Target> targets) {
         client.targetsAreReady(targets);

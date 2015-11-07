@@ -9,6 +9,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity android:name=".SelectTargetActivity" >
+
+        </activity>
+        <activity
+            android:name=".AddTargetActivity"
+            android:label="@string/title_activity_add_target"
+            android:theme="@style/AppTheme.NoActionBar" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
