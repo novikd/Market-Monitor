@@ -1,6 +1,6 @@
 package ru.ifmo.android_2015.marketmonitor;
 
-import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,19 +9,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.List;
 
 import db.FetchTargetsTask;
 import db.FetchTargetsTaskClient;
-import db.MarketMonitorDBHelper;
-import list.TargetSelectedListener;
+import list.RecyclerDividerDecorator;
+import list.SelectedListener;
 import list.TargetsRecyclerAdapter;
 import target.Target;
 
 public class SelectTargetActivity extends AppCompatActivity
-        implements TargetSelectedListener, FetchTargetsTaskClient {
+        implements SelectedListener<Target>, FetchTargetsTaskClient {
 
     private RecyclerView recyclerView;
     private FetchTargetsTask fetchTargetsTask;
@@ -43,6 +42,10 @@ public class SelectTargetActivity extends AppCompatActivity
 
         recyclerView = (RecyclerView) findViewById(R.id.targets_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new TargetsRecyclerAdapter(this);
+        adapter.setSelectListener(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new RecyclerDividerDecorator(Color.DKGRAY));
 
         if (savedInstanceState != null) {
             fetchTargetsTask = (FetchTargetsTask) getLastCustomNonConfigurationInstance();
@@ -54,10 +57,6 @@ public class SelectTargetActivity extends AppCompatActivity
         } else {
             fetchTargetsTask.attachClient(this);
         }
-
-        adapter = new TargetsRecyclerAdapter(this);
-        adapter.setTargetSelectedListener(this);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class SelectTargetActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTargetSelected(Target target) {
+    public void onSelected(Target target) {
         Log.i(TAG, "Target selected: " + target.getName());
         //TODO: Add part with starting new activity
     }
@@ -80,8 +79,9 @@ public class SelectTargetActivity extends AppCompatActivity
     }
 
     public void addNewTarget(MenuItem menuItem) {
+        Log.i(TAG, "Add new button was clicked");
         //TODO: start the AddTargetActivity
     }
 
-    private static final String TAG = "SELECT_TARGET";
+    private static final String TAG = "SELECT_TARGET_ACTIVITY";
 }

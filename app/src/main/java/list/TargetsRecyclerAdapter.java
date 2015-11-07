@@ -20,14 +20,14 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         implements View.OnClickListener, FetchTargetsTaskClient {
 
     private final LayoutInflater layoutInflater;
-    private TargetSelectedListener targetSelectedListener;
+    private SelectedListener<Target> targetSelectedListener;
     private List<Target> targets;
 
     public TargetsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public void setTargetSelectedListener(TargetSelectedListener listener) {
+    public void setSelectListener(SelectedListener<Target> listener) {
         targetSelectedListener = listener;
     }
 
@@ -60,13 +60,15 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     public void onClick(View v) {
         Target target = (Target) v.getTag(R.id.tag_target);
         if (target != null && targetSelectedListener != null) {
-            targetSelectedListener.onTargetSelected(target);
+            targetSelectedListener.onSelected(target);
         }
     }
 
     @Override
     public void targetsAreReady(List<Target> targets) {
         this.targets = targets;
+        targets.add(new Target("Iphone"));
+        targets.add(new Target("Nexus"));
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {
