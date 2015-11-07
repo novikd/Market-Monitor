@@ -20,12 +20,15 @@ import list.TargetSelectedListener;
 import list.TargetsRecyclerAdapter;
 import target.Target;
 
-public class SelectTargetActivity extends AppCompatActivity implements TargetSelectedListener,
-        FetchTargetsTaskClient {
+public class SelectTargetActivity extends AppCompatActivity
+        implements TargetSelectedListener, FetchTargetsTaskClient {
 
     private RecyclerView recyclerView;
+    private FetchTargetsTask fetchTargetsTask;
+    private TargetsRecyclerAdapter adapter;
 
     public void targetsAreReady(List<Target> targets) {
+        adapter.targetsAreReady(targets);
         Log.d("SelectTargetActivity", String.valueOf(targets.size()));
         for (Target target: targets) {
             Log.d("SelectTargetActivity", target.getName());
@@ -35,12 +38,31 @@ public class SelectTargetActivity extends AppCompatActivity implements TargetSel
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_select_target);
+
         recyclerView = (RecyclerView) findViewById(R.id.targets_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        TargetsRecyclerAdapter adapter = new TargetsRecyclerAdapter(this);
+
+        if (savedInstanceState != null) {
+            fetchTargetsTask = (FetchTargetsTask) getLastCustomNonConfigurationInstance();
+        }
+
+        if (fetchTargetsTask == null) {
+            fetchTargetsTask = new FetchTargetsTask(this, this);
+            fetchTargetsTask.execute();
+        } else {
+            fetchTargetsTask.attachClient(this);
+        }
+
+        adapter = new TargetsRecyclerAdapter(this);
         adapter.setTargetSelectedListener(this);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return fetchTargetsTask;
     }
 
     @Override
@@ -58,7 +80,7 @@ public class SelectTargetActivity extends AppCompatActivity implements TargetSel
     }
 
     public void addNewTarget(MenuItem menuItem) {
-
+        //TODO: start the AddTargetActivity
     }
 
     private static final String TAG = "SELECT_TARGET";
