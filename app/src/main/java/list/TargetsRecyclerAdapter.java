@@ -67,8 +67,6 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     @Override
     public void targetsAreReady(List<Target> targets) {
         this.targets = targets;
-        targets.add(new Target("Iphone"));
-        targets.add(new Target("Nexus"));
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {

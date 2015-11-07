@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import db.FetchTargetsTask;
@@ -17,6 +18,8 @@ import db.FetchTargetsTaskClient;
 import list.RecyclerDividerDecorator;
 import list.SelectedListener;
 import list.TargetsRecyclerAdapter;
+import request.GetItemsFromTargetTask;
+import request.Linker;
 import target.Target;
 
 public class SelectTargetActivity extends AppCompatActivity
