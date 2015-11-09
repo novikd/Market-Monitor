@@ -7,6 +7,7 @@ import android.util.JsonReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class GetItemsFromTargetTask extends AsyncTask<URL, Void, ArrayList<Item>
             connection.disconnect();
             return result;
         } catch (Exception e) {
+            e.printStackTrace();
             if (connection != null)
                 connection.disconnect();
             return new ArrayList<>();
@@ -51,41 +53,83 @@ public class GetItemsFromTargetTask extends AsyncTask<URL, Void, ArrayList<Item>
 
     @Override
     protected void onPostExecute(ArrayList<Item> itemList) {
+        //TODO: implement it
         super.onPostExecute(itemList);
     }
 
     private ArrayList<Item> readJsonStream(InputStream is) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(is));
+        ArrayList<Item> result = null;
 
-        try {
-            return readMessages(reader);
-        } finally {
-            reader.close();
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            switch (name) {
+                case "findItemsByKeywordsResponse":
+                    result = readMessages(reader);
+                    break;
+                default:
+                    reader.skipValue();
+            }
         }
+
+        reader.endObject();
+        reader.close();
+
+        return result;
     }
 
     private ArrayList<Item> readMessages(JsonReader reader) throws IOException {
+        ArrayList<Item> result = null;
+
         reader.beginArray();
+        reader.beginObject();
 
-        while (!reader.nextName().equals("searchResult"))
-            reader.skipValue();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            switch (name) {
+                case "searchResult":
+                    result = readResult(reader);
+                    break;
+                default:
+                    reader.skipValue();
+            }
+        }
 
-        ArrayList<Item> res = readResult(reader);
-
+        reader.endObject();
         reader.endArray();
 
-        return res;
+        return result;
     }
 
     private ArrayList<Item> readResult(JsonReader reader) throws IOException {
-        ArrayList<Item> result = new ArrayList<>();
+        ArrayList<Item> result = null;
 
         reader.beginArray();
+        reader.beginObject();
 
         while(reader.hasNext()) {
-            result.add(readItem(reader));
+            String name = reader.nextName();
+            switch (name) {
+                case "@count":
+                    int count = reader.nextInt();
+                    if (count == 0) {
+                        reader.endObject();
+                        return null;
+                    }
+                    break;
+                case "item":
+                    reader.beginArray();
+                    result = new ArrayList<>();
+                    while (reader.hasNext()) {
+                        result.add(readItem(reader));
+                    }
+                    reader.endArray();
+                    break;
+            }
         }
 
+        reader.endObject();
         reader.endArray();
 
         return result;
@@ -93,46 +137,66 @@ public class GetItemsFromTargetTask extends AsyncTask<URL, Void, ArrayList<Item>
 
     private Item readItem(JsonReader reader) throws IOException {
         Item res = new Item();
-        reader.beginArray();
+        reader.beginObject();
 
         while (reader.hasNext()) {
             String name = reader.nextName();
             switch (name) {
-                case "attribute":
-                    reader.beginArray();
-                    while (reader.hasNext()) {
-                        if (reader.nextName().equals("name")) {
-                            res.setName(reader.nextString());
-                        } else {
-                            reader.skipValue();
-                        }
-                    }
-                    reader.endArray();
+                case "title":
+                    res.setName(readString(reader));
                     break;
                 case "itemId":
-                    res.setId(reader.nextString());
+                    res.setId(readString(reader));
                     break;
-                case "discountPriceInfo":
+                case "sellingStatus":
                     reader.beginArray();
+                    reader.beginObject();
                     while (reader.hasNext()) {
-                        if (reader.nextName().equals("originalRetailPrice")) {
-                            res.setPrice(reader.nextString());
+                        String tmp = reader.nextName();
+                        if (tmp.equals("currentPrice")) {
+                            readPrice(reader, res);
                         } else {
                             reader.skipValue();
                         }
                     }
+                    reader.endObject();
                     reader.endArray();
                     break;
                 case "viewItemURL":
-                    res.setUrl(reader.nextString());
+                    res.setUrl(readString(reader));
                     break;
                 default:
                     reader.skipValue();
             }
         }
 
-        reader.endArray();
+        reader.endObject();
 
+        return res;
+    }
+
+    private void readPrice(JsonReader reader, Item res) throws IOException {
+        reader.beginArray();
+        reader.beginObject();
+
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            if (name.equals("@currencyId")) {
+                res.setBanknote(reader.nextString());
+            } else if (name.equals("__value__")) {
+                res.setPrice(reader.nextString());
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        reader.endArray();
+    }
+
+    private String readString(JsonReader reader) throws IOException {
+        reader.beginArray();
+        String res = reader.nextString();
+        reader.endArray();
         return res;
     }
 }

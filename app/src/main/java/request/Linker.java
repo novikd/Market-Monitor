@@ -2,13 +2,15 @@ package request;
 
 import android.net.Uri;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public final class Linker {
 
-    //This is sandbox App_id. We should change it to production App_id before release
-    private static final String APP_ID = "DmitryNo-a46d-46a8-b0ba-755c3fec79cc";
+    //This is production App_id. It doesn't work with sandbox App_id
+    private static final String APP_ID = "DmitryNo-2cf6-4f15-9caa-ee4cee6b267c";
 
     private static final String BASE_FIND_URL = "http://svcs.ebay.com/services/search/FindingService/v1";
     private static final String BASE_SHOP_URL = "http://open.api.ebay.com/shopping";
@@ -37,7 +39,7 @@ public final class Linker {
                 .appendQueryParameter(PARAM_VERSION, VERSION_FIND)
                 .appendQueryParameter(PARAM_APPID, APP_ID)
                 .appendQueryParameter(PARAM_FORMAT, FORMAT_JSON)
-                .appendQueryParameter(PARAM_KEYS, Uri.encode(request))
+                .appendQueryParameter(PARAM_KEYS, request)
                 .build();
         return new URL(uri.toString());
     }

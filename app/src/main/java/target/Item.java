@@ -4,7 +4,7 @@ package target;
  * Created by novik on 07.11.15.
  */
 public class Item {
-    private String name, url, price, id;
+    private String name, url, price, id, banknote;
 
     public Item() {}
 
@@ -24,6 +24,10 @@ public class Item {
         return id;
     }
 
+    public String getBanknote() {
+        return banknote;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -38,5 +42,9 @@ public class Item {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setBanknote(String banknote) {
+        this.banknote = banknote;
     }
 }
