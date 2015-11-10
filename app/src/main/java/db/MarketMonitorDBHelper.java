@@ -17,6 +17,9 @@ import target.Target;
 /**
  * Created by ruslanthakohov on 05/11/15.
  */
+
+//TODO: Add exceptions
+
 public class MarketMonitorDBHelper extends SQLiteOpenHelper {
 
     //Database Version and Name
@@ -26,9 +29,6 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
     //Table names
     private static final String TABLE_TARGETS = "targets";
     private static final String TABLE_ITEMS = "items";
-    private static final String TABLE_TARGETS_ITEMS = "targets_items"; //responsible for
-                                                                       //the relationship
-                                                                       //between targets and items
 
     //Common column names
     private static final String KEY_ID = "_id";
@@ -41,10 +41,7 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
     private static final String KEY_PRICE = "price";
     private static final String KEY_BANKNOTE = "banknote";
     private static final String KEY__ID = "__id";
-
-    //Targets_items table column names
     private static final String KEY_TARGET_ID = "target_id";
-    private static final String KEY_ITEM_ID = "item_id";
 
     //Targets table creation statement
     private static final String CREATE_TARGETS_TABLE = "CREATE TABLE " + TABLE_TARGETS + "("
@@ -53,11 +50,8 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
     //Items table creation statement
     private static final String CREATE_ITEMS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "("
             + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_URL + " TEXT,"
-            + KEY_PRICE + " TEXT," + KEY__ID + " TEXT," + KEY_BANKNOTE + " TEXT)";
-
-    private static final String CREATE_TARGETS_ITEMS_TABLE = "CREATE TABLE " + TABLE_TARGETS_ITEMS
-            + "(" + KEY__ID + " INTEGER PRIMARY KEY," + KEY_TARGET_ID + " INTEGER," +
-            KEY_ITEM_ID + " INTEGER)";
+            + KEY_PRICE + " TEXT," + KEY__ID + " TEXT," + KEY_BANKNOTE + " TEXT," +
+            KEY_TARGET_ID + " INTEGER)";
 
     public MarketMonitorDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -70,7 +64,6 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         //creating tables
         db.execSQL(CREATE_TARGETS_TABLE);
         db.execSQL(CREATE_ITEMS_TABLE);
-        db.execSQL(CREATE_TARGETS_ITEMS_TABLE);
 
         Log.d(TAG, "Tables created");
     }
@@ -98,8 +91,12 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, target.getName());
 
-        db.insert(TABLE_TARGETS, null, values);
-
+        long id = db.insert(TABLE_TARGETS, null, values);
+        if (id != -1) {
+            target.setId(id);
+        } else {
+            Log.e(TAG, "Failed to add target to the db");
+        }
         db.close();
     }
 
@@ -114,6 +111,7 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Target target = new Target(cursor.getString(1));
+                target.setId(cursor.getLong(0));
                 targetList.add(target);
             } while (cursor.moveToNext());
         }
@@ -123,12 +121,15 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         return targetList;
     }
 
-    //TODO: delete all items associated with the target
     //deleting a single target
     public void deleteTarget(Target target) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TARGETS, KEY_NAME + " = ?",
-                new String[]{String.valueOf(target.getName())});
+
+        deleteItemsForTarget(target, db);
+
+        //delete the target
+        db.delete(TABLE_TARGETS, KEY_ID + " = ?",
+                new String[]{String.valueOf(target.getId())});
         db.close();
     }
 
@@ -136,7 +137,7 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
      * CRUD operations for items
      */
 
-    public void addItem(Item item) {
+    public void addItemForExistingTarget(Target existingTarget, Item item) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -145,6 +146,9 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         values.put(KEY_PRICE, item.getPrice());
         values.put(KEY_BANKNOTE, item.getBanknote());
         values.put(KEY_ID, item.getId());
+        values.put(KEY_TARGET_ID, existingTarget.getId());
+
+        item.setTargetId(existingTarget.getId());
 
         db.insert(TABLE_TARGETS, null, values);
 
@@ -155,10 +159,9 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
     public List<Item> getItemsForTarget(Target target) {
         ArrayList<Item> items = new ArrayList<>();
 
-        String selectQuery = "SELECT  * FROM " + TABLE_ITEMS + " ti, " +
-                TABLE_TARGETS + " tt, " + TABLE_TARGETS_ITEMS + " tti WHERE " +
-                "ti." + KEY__ID + " = tti." + KEY_ITEM_ID + "AND tt." + KEY__ID +
-                " = tti." + KEY_TARGET_ID;
+        //make a query to find all items associated with the given target
+        String selectQuery = "SELECT  * FROM " + TABLE_ITEMS + " ti WHERE" +
+                " ti." + KEY_TARGET_ID + " = " + String.valueOf(target.getId());
 
         Cursor cursor = getReadableDatabase().rawQuery(selectQuery, null);;
 
@@ -178,6 +181,18 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return items;
+    }
+
+    public void deleteItemsForTarget(Target target, SQLiteDatabase db) {
+        //delete all items associated with this target
+        String whereClause = KEY_TARGET_ID + " = " + String .valueOf(target.getId());
+        db.delete(TABLE_ITEMS, whereClause, null);
+    }
+
+    public void deleteItemsForTarget(Target target) {
+        SQLiteDatabase db = getWritableDatabase();
+        deleteItemsForTarget(target, db);
+        db.close();
     }
 
     /**
