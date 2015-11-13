@@ -20,6 +20,10 @@ import target.Target;
 
 //TODO: Add exceptions
 
+/**
+ * Class that wraps operations with the database
+ * Defines tables for targets and items and methods for managing them
+ */
 public class MarketMonitorDBHelper extends SQLiteOpenHelper {
 
     //Database Version and Name
@@ -103,7 +107,7 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
     //getting all targets
     public List<Target> getAllTargets() {
         List<Target> targetList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_TARGETS;
+        String selectQuery = "SELECT  * FROM " + TABLE_TARGETS;
 
         Cursor cursor = getReadableDatabase().rawQuery(selectQuery, null);
 
@@ -145,12 +149,12 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         values.put(KEY_URL, item.getUrl());
         values.put(KEY_PRICE, item.getPrice());
         values.put(KEY_BANKNOTE, item.getBanknote());
-        values.put(KEY_ID, item.getId());
+        values.put(KEY__ID, item.getId());
         values.put(KEY_TARGET_ID, existingTarget.getId());
 
         item.setTargetId(existingTarget.getId());
 
-        db.insert(TABLE_TARGETS, null, values);
+        db.insert(TABLE_ITEMS, null, values);
 
         db.close();
     }
@@ -162,6 +166,8 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         //make a query to find all items associated with the given target
         String selectQuery = "SELECT  * FROM " + TABLE_ITEMS + " ti WHERE" +
                 " ti." + KEY_TARGET_ID + " = " + String.valueOf(target.getId());
+
+        Log.d(TAG, selectQuery);
 
         Cursor cursor = getReadableDatabase().rawQuery(selectQuery, null);;
 
@@ -194,10 +200,6 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         deleteItemsForTarget(target, db);
         db.close();
     }
-
-    /**
-     * Helper functions
-     */
 
     private static final String TAG = "MarketMonitorDBHelper";
 }

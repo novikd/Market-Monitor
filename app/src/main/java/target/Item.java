@@ -57,4 +57,18 @@ public class Item {
     public void setTargetId(long targetId) {
         this.targetId = targetId;
     }
+
+    @Override
+    public boolean equals(Object item) {
+        if (item.getClass() == Item.class) {
+            return ((Item) item).getId().equals(id);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

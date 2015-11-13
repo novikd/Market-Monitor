@@ -1,5 +1,7 @@
 package target;
 
+import java.util.Objects;
+
 /**
  * Created by novik on 05.11.15.
  */
@@ -23,5 +25,19 @@ public class Target {
 
     public long getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        if (target.getClass() == Target.class) {
+            return ((Target) target).getId() == id;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id % (long) Integer.MAX_VALUE);
     }
 }
