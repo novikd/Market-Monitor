@@ -1,5 +1,6 @@
 package ru.ifmo.android_2015.marketmonitor;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,7 +35,6 @@ public class AddTargetActivity extends AppCompatActivity
 
     private RecyclerView categoriesList;
     private TextView textTarget;
-    private Button buttonAddTarget;
     private ProgressBar progressBar;
 
     private List<Category> categories; //model
@@ -51,7 +51,6 @@ public class AddTargetActivity extends AppCompatActivity
         //initialize handlers for UI elements
         categoriesList = (RecyclerView) findViewById(R.id.categoriesList);
         textTarget = (TextView) findViewById(R.id.textTarget);
-        buttonAddTarget = (Button) findViewById(R.id.buttonAdd);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         //setup the RecyclerView
@@ -69,6 +68,8 @@ public class AddTargetActivity extends AppCompatActivity
         } else {
             task.attachClient(this);
         }
+
+        //TODO: handle config changes for AddTargetTask
     }
 
     @Override
@@ -106,36 +107,74 @@ public class AddTargetActivity extends AppCompatActivity
      */
     public void downloadFailed() {
         progressBar.setVisibility(View.INVISIBLE);
-        //TODO: extract text to string resources
-        Toast.makeText(this, "Failed to load the categories", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.categories_load_error, Toast.LENGTH_SHORT).show();
     }
 
     public void onAddClick(View view) {
         if (textTarget.getText().toString().isEmpty()) {
-            //TODO: extarct text to string recourses
-            Toast.makeText(this, "You need to specify target!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.specify_target_error, Toast.LENGTH_SHORT).show();
         } else {
-            //TODO: give the new target back to the caller
 
             new AddTargetTask(this).execute(new Target(textTarget.getText().toString()));
         }
     }
 
-    static class AddTargetTask extends AsyncTask<Target, Void, Void> {
+    /**
+     * Called by AddTargetTask when the new target is added to the database
+     * @param target the added target with its id set
+     */
+    public void onTargetAdded(Target target) {
+        //TODO: add constants for result code and success flag
+        Intent intent = new Intent();
+        intent.putExtra("SUCCESS", true);
+        setResult(0, intent);
+        finish();
+    }
+
+    static class AddTargetTask extends AsyncTask<Target, Void, Target> {
         AddTargetActivity activity;
+
+        Target newTarget = null;
 
         public AddTargetTask(AddTargetActivity activity) {
             this.activity = activity;
         }
 
         @Override
-        public Void doInBackground(Target ... params) {
+        public Target doInBackground(Target ... params) {
             MarketMonitorDBHelper helper = new MarketMonitorDBHelper(activity);
             helper.addTarget(params[0]);
 
             Log.d(TAG, "New target saved");
 
-            return null;
+            newTarget = params[0];
+
+            return newTarget;
+        }
+
+        @Override
+        public void onPostExecute(Target target) {
+            updateClient();
+        }
+
+        @Override
+        public void onProgressUpdate(Void ... params) {
+            updateClient();
+        }
+
+        private void updateClient() {
+            if (activity != null) {
+                if (newTarget != null) {
+                    activity.onTargetAdded(newTarget);
+                }
+            } else {
+                Log.e(TAG, "No activity attached to AddTargetTask");
+            }
+        }
+
+        public void attachActivity(AddTargetActivity activity) {
+            this.activity = activity;
+            publishProgress();
         }
     }
 

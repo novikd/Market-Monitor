@@ -2,7 +2,6 @@ package db;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;

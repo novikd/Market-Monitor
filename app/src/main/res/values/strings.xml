@@ -4,4 +4,6 @@
     <string name="add_target_hint">Input your target</string>
     <string name="pick_category">Pick a category:</string>
     <string name="add">Add</string>
+    <string name="categories_load_error">Failed to load the categories</string>
+    <string name="specify_target_error">You need to specify target!</string>
 </resources>
