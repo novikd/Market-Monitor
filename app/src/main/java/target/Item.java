@@ -5,6 +5,8 @@ package target;
  */
 public class Item {
     private String name, url, price, id, banknote;
+    private long targetId; //id of the target which this item
+                          // is associated with
 
     public Item() {}
 
@@ -28,6 +30,10 @@ public class Item {
         return banknote;
     }
 
+    public long getTargetId() {
+        return targetId;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -46,5 +52,23 @@ public class Item {
 
     public void setBanknote(String banknote) {
         this.banknote = banknote;
+    }
+
+    public void setTargetId(long targetId) {
+        this.targetId = targetId;
+    }
+
+    @Override
+    public boolean equals(Object item) {
+        if (item.getClass() == Item.class) {
+            return ((Item) item).getId().equals(id);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }
