@@ -141,8 +141,17 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
      * CRUD operations for items
      */
 
-    public void addItemForExistingTarget(Target existingTarget, Item item) {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public void addItemsForTarget(Target existingTarget, Item ... items) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (Item item: items) {
+            addItemForTarget(existingTarget, item, db);
+        }
+
+        db.close();
+    }
+
+    private void addItemForTarget(Target existingTarget, Item item, SQLiteDatabase db) {
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, item.getName());
@@ -155,8 +164,6 @@ public class MarketMonitorDBHelper extends SQLiteOpenHelper {
         item.setTargetId(existingTarget.getId());
 
         db.insert(TABLE_ITEMS, null, values);
-
-        db.close();
     }
 
     //get all the items associated with a given target
