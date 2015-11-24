@@ -84,7 +84,7 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
             for (int j = 0; j < ITEMS_FOR_TARGET; j++) {
                 Item item = makeItem(targetsList.get(i).getName() + "_item" + String .valueOf(j));
                 item.setId(String.valueOf(i) + String.valueOf(j));
-                helper.addItemForExistingTarget(targetsList.get(i), item);
+                helper.addItemsForTarget(targetsList.get(i), item);
                 items.add(item);
             }
 
@@ -108,7 +108,7 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
         for (int j = 0; j < ITEMS_FOR_TARGET; j++) {
             Item item = makeItem(targetsList.get(0).getName() + "_item" + String .valueOf(j));
             item.setId(String.valueOf(0) + String.valueOf(j));
-            helper.addItemForExistingTarget(targetsList.get(0), item);
+            helper.addItemsForTarget(targetsList.get(0), item);
         }
 
         helper.deleteItemsForTarget(targetsList.get(0));
