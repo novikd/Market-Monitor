@@ -22,6 +22,7 @@ import org.w3c.dom.Text;
 import java.util.List;
 import java.util.Objects;
 
+import db.MarketDB;
 import db.MarketMonitorDBHelper;
 import list.CategoriesRecyclerAdapter;
 import list.RecyclerDividerDecorator;
@@ -142,7 +143,7 @@ public class AddTargetActivity extends AppCompatActivity
 
         @Override
         public Target doInBackground(Target ... params) {
-            MarketMonitorDBHelper helper = new MarketMonitorDBHelper(activity);
+            MarketDB helper = new MarketDB(activity);
             helper.addTarget(params[0]);
 
             Log.d(TAG, "New target saved");
