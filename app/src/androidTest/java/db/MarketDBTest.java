@@ -2,6 +2,7 @@ package db;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import target.Target;
 /**
  * Created by ruslanthakohov on 10/11/15.
  */
-public class MarketMonitorDBHelperTest extends AndroidTestCase {
+public class MarketDBTest extends AndroidTestCase {
 
     //test data set
     private Target[] targets = {
@@ -24,24 +25,20 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
 
     private List<Target> targetsList;
 
-    private MarketMonitorDBHelper helper;
+    private MarketDB helper;
 
     public void setUp() throws Exception {
         super.setUp();
         RenamingDelegatingContext context = new RenamingDelegatingContext(getContext(), "test_");
-        helper = new MarketMonitorDBHelper(context);
+        helper = new MarketDB(context);
+        helper.deleteAllTargets();
         targetsList = new ArrayList<>(Arrays.asList(targets));
-    }
-
-    public void tearDown() throws Exception {
-        helper.close();
-        super.tearDown();
     }
 
     public void testGetAllTargets() {
         //add targets to the db
         for (Target target: targetsList) {
-            helper.addTarget(target);
+            assertEquals("insertion should complete without errors", true, helper.addTarget(target));
         }
 
         //get targets from the db
@@ -56,6 +53,7 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
     }
 
     public void testDeleteTarget() {
+
         for (Target target: targetsList) {
             helper.addTarget(target);
         }
@@ -84,7 +82,7 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
             for (int j = 0; j < ITEMS_FOR_TARGET; j++) {
                 Item item = makeItem(targetsList.get(i).getName() + "_item" + String .valueOf(j));
                 item.setId(String.valueOf(i) + String.valueOf(j));
-                helper.addItemForExistingTarget(targetsList.get(i), item);
+                helper.addItemsForTarget(targetsList.get(i), item);
                 items.add(item);
             }
 
@@ -95,7 +93,11 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
         for (int i = 0; i < targetsList.size(); i++) {
             List<Item> fetchedItems = helper.getItemsForTarget(targetsList.get(i));
             assertEquals(itemsForTarget.get(i).size(), fetchedItems.size());
-            assertEquals(true, fetchedItems.containsAll(itemsForTarget.get(i)));
+
+            for (int j = 0; j < fetchedItems.size(); j++) {
+                Log.d(TAG, itemsForTarget.get(i).get(j).getId() + " " + fetchedItems.get(j).getId());
+            }
+            assertEquals("items for target", true, itemsForTarget.get(i).containsAll(fetchedItems));
         }
 
     }
@@ -108,7 +110,7 @@ public class MarketMonitorDBHelperTest extends AndroidTestCase {
         for (int j = 0; j < ITEMS_FOR_TARGET; j++) {
             Item item = makeItem(targetsList.get(0).getName() + "_item" + String .valueOf(j));
             item.setId(String.valueOf(0) + String.valueOf(j));
-            helper.addItemForExistingTarget(targetsList.get(0), item);
+            helper.addItemsForTarget(targetsList.get(0), item);
         }
 
         helper.deleteItemsForTarget(targetsList.get(0));

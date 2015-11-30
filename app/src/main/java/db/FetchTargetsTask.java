@@ -23,7 +23,7 @@ public class FetchTargetsTask extends AsyncTask<Void, Void, List<Target>> {
 
     @Override
     public List<Target> doInBackground(Void ... params) {
-        MarketMonitorDBHelper helper = new MarketMonitorDBHelper(context);
+        MarketDB helper = new MarketDB(context);
         return helper.getAllTargets();
     }
 
