@@ -1,64 +1,102 @@
 package request;
 
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.util.JsonReader;
+/**
+ * Created by ruslanthakohov on 29/11/15.
+ */
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.util.JsonReader;
+import android.util.Log;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import db.MarketDB;
 import target.Item;
 
 /**
- * Created by novik on 07.11.15.
+ * This service makes a FindingService request to the API,
+ * parses the JSON respones and writes it to the database
  */
-public class GetItemsFromTargetTask extends AsyncTask<URL, Void, ArrayList<Item> > {
+public class GetItemsService extends IntentService {
+    private static final String SERVICE_NAME = GetItemsService.class.getSimpleName();
+    private static final String TAG = "GetItemsService";
 
-    private Activity activity;
+    private MarketDB db;
 
-    public GetItemsFromTargetTask(Activity activity) {
-        this.activity = activity;
+    public GetItemsService() {
+        super(SERVICE_NAME);
+        db = new MarketDB(this);
     }
 
-    public void attachActivity(Activity activity) {
-        this.activity = activity;
-    }
-
+    /**
+     * Gets new requests and handles them
+     * @param workIntent    URL for making a request to the API
+     */
     @Override
-    protected ArrayList<Item> doInBackground(URL... params) {
-        ArrayList<Item> result = null;
+    protected void onHandleIntent(Intent workIntent) {
+        Log.d(TAG, "Service started");
+        //get the URL for request
+        String dataString = workIntent.getDataString();
+        long targetId = workIntent.getLongExtra("TARGET_ID", -1);
+
+        Log.d(TAG, "Load items for target " + String.valueOf(targetId));
+
+        URL requestURL = null;
         HttpURLConnection connection = null;
+        InputStream in = null;
 
         try {
-            connection = (HttpURLConnection) params[0].openConnection();
-            InputStream inputStream = connection.getInputStream();
+            requestURL = new URL(dataString);
+            connection = (HttpURLConnection) requestURL.openConnection();
 
-            result = readJsonStream(inputStream);
+            int responseCode = connection.getResponseCode();
+            Log.d(TAG, "Received HTTP response code: " + responseCode);
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new FileNotFoundException("Unexpected HTTP response: " + responseCode
+                + ", " + connection.getResponseMessage());
+            }
 
-            connection.disconnect();
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (connection != null)
-                connection.disconnect();
-            return new ArrayList<>();
+            in = connection.getInputStream();
+            db.addItemsForTarget(targetId, readJsonResponse(in));
+            Log.d(TAG, "Data saved to the db");
+
+            makeBroadcast(targetId);
+
+            //Log.d(TAG, "Data: " + builder.toString());
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+
+    }
+
+    /**
+     * Sends a broadcast that items for a target have been updated
+     * @param id    id of the updated target
+     */
+    private void makeBroadcast(long id) {
+        Intent intent = new Intent("UPDATE_ITEMS");
+        intent.putExtra("UPDATED_TARGET_ID", id);
+        sendBroadcast(intent);
+    }
+
+    private List<Item> readJsonResponse(InputStream in) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in));
+        try {
+            return readItemsByKeyworksResponse(reader);
+        } finally {
+            reader.close();
         }
     }
 
-    @Override
-    protected void onPostExecute(ArrayList<Item> itemList) {
-        //TODO: implement it
-        super.onPostExecute(itemList);
-    }
-
-    private ArrayList<Item> readJsonStream(InputStream is) throws IOException {
-        JsonReader reader = new JsonReader(new InputStreamReader(is));
+    private ArrayList<Item> readItemsByKeyworksResponse(JsonReader reader) throws IOException {
         ArrayList<Item> result = null;
 
         reader.beginObject();

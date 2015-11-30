@@ -82,7 +82,7 @@ public final class MarketContract {
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE +
                 "(" +
-                ITEM_ID + " TEXT, " +
+                ITEM_ID + " INTEGER PRIMARY KEY, " +
                 ITEM_NAME + " TEXT, " +
                 ITEM_URL + " TEXT, " +
                 ITEM_PRICE + " TEXT, " +

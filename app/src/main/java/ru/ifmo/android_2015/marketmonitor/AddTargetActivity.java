@@ -2,6 +2,7 @@ package ru.ifmo.android_2015.marketmonitor;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import list.CategoriesRecyclerAdapter;
 import list.RecyclerDividerDecorator;
 import request.GetCategoriesTask;
 import request.GetCategoriesTaskClient;
+import request.GetItemsService;
+import request.Linker;
 import target.Category;
 import target.Target;
 
@@ -117,7 +120,19 @@ public class AddTargetActivity extends AppCompatActivity
      * @param target the added target with its id set
      */
     public void onTargetAdded(Target target) {
+        //run fetching items for the new target
+        Intent serviceIntent = new Intent(this, GetItemsService.class);
+        try {
+            serviceIntent.setData(Uri.parse(Linker.createFindUrl(target.getName()).toString()));
+        } catch (Exception e) {
+            Log.d(TAG, "URL Exception: " + e.toString());
+        }
+        serviceIntent.putExtra("TARGET_ID", target.getId());
+        startService(serviceIntent);
+
         //TODO: add constants for result code and success flag
+
+        //send result back to the calling activity
         Intent intent = new Intent();
         intent.putExtra("SUCCESS", true);
         setResult(0, intent);

@@ -4,7 +4,8 @@ package target;
  * Created by novik on 07.11.15.
  */
 public class Item {
-    private String name, url, price, id, banknote;
+    private String name, url, price, banknote;
+    long id;
     private long targetId; //id of the target which this item
                           // is associated with
 
@@ -22,7 +23,7 @@ public class Item {
         return price;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
@@ -46,7 +47,7 @@ public class Item {
         this.price = price;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -61,7 +62,7 @@ public class Item {
     @Override
     public boolean equals(Object item) {
         if (item.getClass() == Item.class) {
-            return ((Item) item).getId().equals(id);
+            return ((Item) item).getId() == id;
         } else {
             return false;
         }
@@ -69,6 +70,6 @@ public class Item {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return (int) (id % (long) Integer.MAX_VALUE);
     }
 }

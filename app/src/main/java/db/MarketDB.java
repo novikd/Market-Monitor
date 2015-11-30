@@ -98,33 +98,37 @@ public class MarketDB {
         return targets;
     }
 
-    public void addItemsForTarget(Target existingTarget, Item ... items) {
+    public void addItemsForTarget(Target existingTarget, List<Item> items) {
+        addItemsForTarget(existingTarget.getId(), items);
+    }
+
+    public void addItemsForTarget(long existingTargetId, List<Item> items) {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         for (Item item: items) {
-            addItemForTarget(existingTarget, item, db);
+            addItemForTarget(existingTargetId, item, db);
         }
         //TODO: error handling
     }
 
     /**
      * Adds an Item and associates it with an existing Target
-     * @param existingTarget     Target object (already in the database)
+     * @param existingTargetId     Target ID object (already in the database)
      * @param item               Item object
      * @param db                 SQLiteDatabase object
      * @return                   false if there was an error
      */
-    private boolean addItemForTarget(Target existingTarget, Item item, SQLiteDatabase db) {
 
+    private boolean addItemForTarget(long existingTargetId, Item item, SQLiteDatabase db) {
         ContentValues values = new ContentValues();
         values.put(MarketContract.ItemColumns.ITEM_NAME, item.getName());
         values.put(MarketContract.ItemColumns.ITEM_URL, item.getUrl());
         values.put(MarketContract.ItemColumns.ITEM_PRICE, item.getPrice());
         values.put(MarketContract.ItemColumns.ITEM_BANKNOTE, item.getBanknote());
         values.put(MarketContract.ItemColumns.ITEM_ID, item.getId());
-        values.put(MarketContract.ItemColumns.ITEM_TARGET_ID, existingTarget.getId());
+        values.put(MarketContract.ItemColumns.ITEM_TARGET_ID, existingTargetId);
 
-        item.setTargetId(existingTarget.getId());
+        item.setTargetId(existingTargetId);
 
         long id = db.insert(MarketContract.Items.TABLE, null, values);
         if (id == -1) {
@@ -136,11 +140,15 @@ public class MarketDB {
     }
 
     public List<Item> getItemsForTarget(Target target) {
+        return getItemsForTarget(target.getId());
+    }
+
+    public List<Item> getItemsForTarget(long targetId) {
         ArrayList<Item> items = new ArrayList<>();
 
         //make a query to find all items associated with the given target
         String selectQuery = "SELECT  * FROM " + MarketContract.Items.TABLE + " ti WHERE" +
-                " ti." + MarketContract.ItemColumns.ITEM_TARGET_ID + " = " + String.valueOf(target.getId());
+                " ti." + MarketContract.ItemColumns.ITEM_TARGET_ID + " = " + String.valueOf(targetId);
 
         Log.d(TAG, selectQuery);
 
@@ -155,7 +163,7 @@ public class MarketDB {
                     item.setName(cursor.getString(1));
                     item.setUrl(cursor.getString(2));
                     item.setPrice(cursor.getString(3));
-                    item.setId(cursor.getString(0));
+                    item.setId(cursor.getLong(0));
                     item.setBanknote(cursor.getString(4));
                     items.add(item);
                 } while (cursor.moveToNext());
