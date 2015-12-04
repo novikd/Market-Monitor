@@ -68,10 +68,14 @@ public class SelectTargetActivity extends AppCompatActivity
         return fetchTargetsTask;
     }
 
+    public static final String TARGET_ID_EXTRA = "targetIdExtra";
+
     @Override
     public void onSelected(Target target) {
         Log.i(TAG, "Target selected: " + target.getName());
-        //TODO: Add part with starting new activity
+        Intent intent = new Intent(this, ItemsActivity.class);
+        intent.putExtra(TARGET_ID_EXTRA, target.getId());
+        startActivity(intent);
     }
 
     @Override
