@@ -110,7 +110,6 @@ public class AddTargetActivity extends AppCompatActivity
         if (textTarget.getText().toString().isEmpty()) {
             Toast.makeText(this, R.string.specify_target_error, Toast.LENGTH_SHORT).show();
         } else {
-
             new AddTargetTask(this).execute(new Target(textTarget.getText().toString()));
         }
     }

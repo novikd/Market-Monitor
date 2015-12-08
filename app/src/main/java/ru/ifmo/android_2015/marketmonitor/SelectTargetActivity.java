@@ -2,6 +2,7 @@ package ru.ifmo.android_2015.marketmonitor;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,20 +12,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.net.MalformedURLException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
-import db.FetchTargetsTask;
-import db.FetchTargetsTaskClient;
+import db.MarketDB;
 import list.RecyclerDividerDecorator;
 import list.SelectedListener;
 import list.TargetsRecyclerAdapter;
-import request.GetItemsFromTargetTask;
-import request.Linker;
 import target.Target;
 
 public class SelectTargetActivity extends AppCompatActivity
-        implements SelectedListener<Target>, FetchTargetsTaskClient {
+        implements SelectedListener<Target> {
 
     private RecyclerView recyclerView;
     private FetchTargetsTask fetchTargetsTask;
@@ -32,10 +30,17 @@ public class SelectTargetActivity extends AppCompatActivity
 
     public void targetsAreReady(List<Target> targets) {
         adapter.targetsAreReady(targets);
-        Log.d("SelectTargetActivity", String.valueOf(targets.size()));
-        for (Target target: targets) {
-            Log.d("SelectTargetActivity", target.getName());
-        }
+
+        /*for (Target target : targets) {
+            Intent serviceIntent = new Intent(this, GetItemsService.class);
+            try {
+                serviceIntent.setData(Uri.parse(Linker.createFindUrl(target.getName()).toString()));
+            } catch (Exception e) {
+                Log.d(TAG, "URL Exception: " + e.toString());
+            }
+            serviceIntent.putExtra("TARGET_ID", target.getId());
+            startService(serviceIntent);
+        }*/
     }
 
     @Override
@@ -56,10 +61,10 @@ public class SelectTargetActivity extends AppCompatActivity
         }
 
         if (fetchTargetsTask == null) {
-            fetchTargetsTask = new FetchTargetsTask(this, this);
+            fetchTargetsTask = new FetchTargetsTask(this);
             fetchTargetsTask.execute();
         } else {
-            fetchTargetsTask.attachClient(this);
+            fetchTargetsTask.attachActivity(this);
         }
     }
 
@@ -91,6 +96,48 @@ public class SelectTargetActivity extends AppCompatActivity
         //TODO: start the AddTargetActivity
         Intent addTargetActivity = new Intent(this, AddTargetActivity.class);
         startActivity(addTargetActivity);
+    }
+
+    private static class FetchTargetsTask extends AsyncTask<Void, Void, Boolean> {
+        private WeakReference<SelectTargetActivity> activity;
+
+        private boolean targetsFetched = false;
+
+        private List<Target> targets;
+
+        FetchTargetsTask(SelectTargetActivity activity) {
+            attachActivity(activity);
+        }
+
+        @Override
+        public Boolean doInBackground(Void ... params) {
+            MarketDB helper = new MarketDB(activity.get().getApplicationContext());
+            targets =  helper.getAllTargets();
+
+            return true;
+        }
+
+        @Override
+        public void onPostExecute(Boolean result) {
+            targetsFetched = result;
+            updateUI();
+        }
+
+        @Override
+        public void onProgressUpdate(Void ... values) {
+            updateUI();
+        }
+
+        public void attachActivity(SelectTargetActivity activity) {
+            this.activity = new WeakReference<>(activity);
+            publishProgress();
+        }
+
+        private void updateUI() {
+            if (targetsFetched) {
+                activity.get().targetsAreReady(targets);
+            }
+        }
     }
 
     private static final String TAG = "SELECT_TARGET_ACTIVITY";

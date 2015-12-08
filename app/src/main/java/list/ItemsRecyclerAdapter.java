@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import ru.ifmo.android_2015.marketmonitor.R;
 import target.Item;
 import target.Target;
@@ -16,13 +18,17 @@ import target.Target;
  */
 public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.ItemViewHolder>
         implements View.OnClickListener {
-    private Item[] mItems;
+    private List<Item> mItems;
 
     private final LayoutInflater inflater;
     private SelectedListener<Item> listener;
 
-    public ItemsRecyclerAdapter(Context context, Item[] items) {
+    public ItemsRecyclerAdapter(Context context, List<Item> items) {
         inflater = LayoutInflater.from(context);
+        setData(items);
+    }
+
+    public void setData(List<Item> items) {
         mItems = items;
     }
 
@@ -39,13 +45,13 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        holder.itemName.setText(mItems[position].getName());
-        holder.itemCost.setText(mItems[position].getPrice());
+        holder.itemName.setText(mItems.get(position).getName());
+        holder.itemCost.setText(mItems.get(position).getPrice());
     }
 
     @Override
     public int getItemCount() {
-        return mItems.length;
+        return mItems.size();
     }
 
     @Override
@@ -64,7 +70,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             super(itemView);
 
             itemName = (TextView) itemView.findViewById(R.id.item_name);
-            itemCost = (TextView) itemView.findViewById(R.id.item_cost);
+            itemCost = (TextView) itemView.findViewById(R.id.item_descr);
         }
     }
 }
