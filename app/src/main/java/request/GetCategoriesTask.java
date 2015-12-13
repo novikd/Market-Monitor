@@ -2,8 +2,15 @@ package request;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.JsonReader;
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +41,29 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, DownloadState> {
     public DownloadState doInBackground(Void ... params) {
         categories = new ArrayList<>();
 
+        HttpURLConnection connection = null;
+        InputStream in = null;
         try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ignore) {}
+            connection = (HttpURLConnection) Linker.createCategoriesUrl().openConnection();
+            in = connection.getInputStream();
 
-        categories.add(new Category("Smartphones"));
-        categories.add(new Category("Clothes"));
-        categories.add(new Category("Perfume"));
-        categories.add(new Category("Food"));
-        categories.add(new Category("Accessories"));
-        categories.add(new Category("Footwear"));
-        categories.add(new Category("Tickets"));
+            categories = readJSON(in);
+        } catch (Exception e) {
+            Log.e(TAG, "Getting categories error occurred: " + e);
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Closing input stream error occurred: " + e);
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return DownloadState.DONE;
     }
@@ -75,6 +94,69 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, DownloadState> {
                 Log.e(TAG, "GetCategoriesTask Client is not set!");
             }
         }
+    }
+
+    private ArrayList<Category> readJSON(InputStream in) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in));
+        ArrayList<Category> result = null;
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            switch (name) {
+                case "CategoryArray":
+                    reader.beginObject();
+                    result = parseCategoriesList(reader);
+                    reader.endObject();
+                    break;
+                default:
+                    reader.skipValue();
+            }
+        }
+
+        return result;
+    }
+
+    private ArrayList<Category> parseCategoriesList(JsonReader reader) throws IOException {
+        ArrayList<Category> result = new ArrayList<>();
+        String name = reader.nextName();
+        reader.beginArray();
+
+        while (reader.hasNext()) {
+            Category category = parseCategory(reader);
+            if (category != null) {
+                result.add(category);
+            }
+        }
+
+        reader.endArray();
+
+        return result;
+    }
+
+    private Category parseCategory(JsonReader reader) throws IOException {
+        String categoryName = "", categoryId = "";
+        reader.beginObject();
+
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            switch (name) {
+                case "CategoryID":
+                    categoryId = reader.nextString();
+                    break;
+                case "CategoryName":
+                    categoryName = reader.nextString();
+                    break;
+                default:
+                    reader.skipValue();
+            }
+        }
+
+        reader.endObject();
+        if (categoryId.equals("-1")) {
+            return null;
+        }
+        return new Category(categoryName, categoryId);
     }
 
     private static final String TAG = "GetCategoriesTask";
