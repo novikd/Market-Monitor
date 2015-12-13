@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import db.FetchTargetsTaskClient;
@@ -18,7 +19,7 @@ import target.Target;
  * Created by novik on 05.11.15.
  */
 public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder>
-        implements View.OnClickListener, FetchTargetsTaskClient {
+        implements View.OnClickListener, FetchTargetsTaskClient, View.OnLongClickListener {
 
     private final LayoutInflater layoutInflater;
     private SelectedListener<Target> targetSelectedListener;
@@ -66,8 +67,23 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     }
 
     @Override
+    public boolean onLongClick(View v) {
+        Target target = (Target) v.getTag(R.id.tag_target);
+        //TODO: To show a button for deleting the Target
+        return false;
+    }
+
+    @Override
     public void targetsAreReady(List<Target> targets) {
         this.targets = targets;
+    }
+
+    public void appendTarget(Target target) {
+        if (targets == null) {
+            targets = new ArrayList<>();
+        }
+        targets.add(target);
+        notifyItemInserted(targets.size() - 1);
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {

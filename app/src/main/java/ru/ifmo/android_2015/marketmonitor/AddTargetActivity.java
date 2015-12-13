@@ -134,8 +134,8 @@ public class AddTargetActivity extends AppCompatActivity
 
         //send result back to the calling activity
         Intent intent = new Intent();
-        intent.putExtra("SUCCESS", true);
-        setResult(0, intent);
+        intent.putExtra("TARGET", target);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

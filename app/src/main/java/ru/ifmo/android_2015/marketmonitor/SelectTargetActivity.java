@@ -86,7 +86,17 @@ public class SelectTargetActivity extends AppCompatActivity
         Log.i(TAG, "Add new button was clicked");
         //TODO: start the AddTargetActivity
         Intent addTargetActivity = new Intent(this, AddTargetActivity.class);
-        startActivity(addTargetActivity);
+        startActivityForResult(addTargetActivity, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            Target target = data.getParcelableExtra("TARGET");
+            adapter.appendTarget(target);
+        }
     }
 
     private static final String TAG = "SELECT_TARGET_ACTIVITY";
