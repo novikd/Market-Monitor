@@ -1,19 +1,39 @@
 package target;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Objects;
 
 /**
  * Created by novik on 05.11.15.
  */
-public class Target {
+public class Target implements Parcelable {
     private long id; //unique identifier of the target
-                    //this is set for targets in the
-                    //db
+                     //this is set for targets in the
+                     //db
     public String name;
 
     public Target(String itemName) {
         name = itemName;
     }
+
+    protected Target(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+    }
+
+    public static final Creator<Target> CREATOR = new Creator<Target>() {
+        @Override
+        public Target createFromParcel(Parcel in) {
+            return new Target(in);
+        }
+
+        @Override
+        public Target[] newArray(int size) {
+            return new Target[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -39,5 +59,16 @@ public class Target {
     @Override
     public int hashCode() {
         return (int) (id % (long) Integer.MAX_VALUE);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
     }
 }
