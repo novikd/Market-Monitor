@@ -3,6 +3,7 @@
     package="ru.ifmo.android_2015.marketmonitor" >
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -31,9 +32,13 @@
         </activity>
         <activity
             android:name=".AddTargetActivity"
-            android:label="@string/title_activity_add_target"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:label="@string/title_activity_add_target" >
         </activity>
+        <activity
+            android:name=".ItemsActivity"
+            android:label="@string/title_activity_items">
+        </activity>
+
     </application>
 
 </manifest>

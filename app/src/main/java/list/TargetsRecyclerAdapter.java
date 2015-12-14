@@ -5,12 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import java.util.List;
 
-import db.FetchTargetsTaskClient;
 import ru.ifmo.android_2015.marketmonitor.R;
 import target.Target;
 
@@ -18,7 +16,7 @@ import target.Target;
  * Created by novik on 05.11.15.
  */
 public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder>
-        implements View.OnClickListener, FetchTargetsTaskClient {
+        implements View.OnClickListener {
 
     private final LayoutInflater layoutInflater;
     private SelectedListener<Target> targetSelectedListener;
@@ -65,7 +63,6 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         }
     }
 
-    @Override
     public void targetsAreReady(List<Target> targets) {
         this.targets = targets;
     }

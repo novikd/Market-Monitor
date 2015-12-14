@@ -75,6 +75,13 @@ public final class MarketContract {
          * SQLite type: INTEGER
          */
         String ITEM_TARGET_ID = "target_id";
+
+        /**
+         * Target ID associated with the item
+         *
+         * SQLite type: INTEGER
+         */
+        String ITEM_IMAGE_URL = "image_url";
     }
 
     public static final class Items implements ItemColumns {
@@ -87,7 +94,8 @@ public final class MarketContract {
                 ITEM_URL + " TEXT, " +
                 ITEM_PRICE + " TEXT, " +
                 ITEM_BANKNOTE + " TEXT, " +
-                ITEM_TARGET_ID + " INTEGER" +
+                ITEM_TARGET_ID + " INTEGER, " +
+                ITEM_IMAGE_URL + " TEXT" +
                 ")";
     }
 
