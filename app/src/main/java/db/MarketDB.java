@@ -127,6 +127,7 @@ public class MarketDB {
         values.put(MarketContract.ItemColumns.ITEM_BANKNOTE, item.getBanknote());
         values.put(MarketContract.ItemColumns.ITEM_ID, item.getId());
         values.put(MarketContract.ItemColumns.ITEM_TARGET_ID, existingTargetId);
+        values.put(MarketContract.ItemColumns.ITEM_IMAGE_URL, item.getImageUrl());
 
         item.setTargetId(existingTargetId);
 
@@ -165,6 +166,8 @@ public class MarketDB {
                     item.setPrice(cursor.getString(3));
                     item.setId(cursor.getLong(0));
                     item.setBanknote(cursor.getString(4));
+                    item.setImageUrl(cursor.getString(6));
+                    item.setTargetId(cursor.getLong(5));
                     items.add(item);
                 } while (cursor.moveToNext());
             }

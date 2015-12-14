@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.util.JsonReader;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -202,6 +203,10 @@ public class GetItemsService extends IntentService {
                     break;
                 case "viewItemURL":
                     res.setUrl(readString(reader));
+                    break;
+                case "galleryURL":
+                    res.setImageUrl(readString(reader));
+                    Log.d(TAG, "image url found: " + res.getImageUrl());
                     break;
                 default:
                     reader.skipValue();
