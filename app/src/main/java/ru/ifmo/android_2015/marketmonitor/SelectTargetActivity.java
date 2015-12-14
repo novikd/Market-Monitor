@@ -12,6 +12,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -48,6 +51,9 @@ public class SelectTargetActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_select_target);
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
+        ImageLoader.getInstance().init(config);
 
         recyclerView = (RecyclerView) findViewById(R.id.targets_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

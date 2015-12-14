@@ -1,11 +1,17 @@
 package list;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.List;
 
@@ -47,6 +53,9 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         holder.itemName.setText(mItems.get(position).getName());
         holder.itemCost.setText(mItems.get(position).getPrice());
+
+        ImageLoader.getInstance().displayImage(mItems.get(position).getImageUrl(), holder.itemImage);
+        Log.d(TAG, mItems.get(position).getImageUrl());
     }
 
     @Override
@@ -65,12 +74,16 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         final TextView itemName;
         final TextView itemCost;
+        final ImageView itemImage;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
 
             itemName = (TextView) itemView.findViewById(R.id.item_name);
             itemCost = (TextView) itemView.findViewById(R.id.item_descr);
+            itemImage = (ImageView) itemView.findViewById(R.id.item_image);
         }
     }
+
+    private static final String TAG = ItemsRecyclerAdapter.class.getSimpleName();
 }

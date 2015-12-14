@@ -4,7 +4,7 @@ package target;
  * Created by novik on 07.11.15.
  */
 public class Item {
-    private String name, url, price, banknote;
+    private String name, url, price, banknote, imageUrl;
     long id;
     private long targetId; //id of the target which this item
                           // is associated with
@@ -57,6 +57,14 @@ public class Item {
 
     public void setTargetId(long targetId) {
         this.targetId = targetId;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     @Override
