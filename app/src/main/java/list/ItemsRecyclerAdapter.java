@@ -2,12 +2,14 @@ package list;
 
 import android.content.Context;
 import android.media.Image;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -51,11 +53,14 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        holder.itemName.setText(mItems.get(position).getName());
-        holder.itemCost.setText(mItems.get(position).getPrice());
+        Item item = mItems.get(position);
+        holder.itemName.setText(item.getName());
+        String price = item.getPrice() + " " + item.getBanknote();
+        holder.itemCost.setText(price);
 
-        ImageLoader.getInstance().displayImage(mItems.get(position).getImageUrl(), holder.itemImage);
-        Log.d(TAG, mItems.get(position).getImageUrl());
+        ImageLoader.getInstance().displayImage(item.getImageUrl(), holder.itemImage);
+        holder.itemLayout.setTag(R.id.tag_item, item); //Если это не сделать, то NPE
+        Log.d(TAG, item.getImageUrl());
     }
 
     @Override
@@ -66,12 +71,14 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
     @Override
     public void onClick(View v) {
         Item item = (Item) v.getTag(R.id.tag_item);
+        Log.i("AdapterOnClick", "Item clicked: " + item.getName());
         if (item != null && listener != null) {
             listener.onSelected(item);
         }
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
+        final LinearLayout itemLayout;
         final TextView itemName;
         final TextView itemCost;
         final ImageView itemImage;
@@ -79,6 +86,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         public ItemViewHolder(View itemView) {
             super(itemView);
 
+            itemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
             itemName = (TextView) itemView.findViewById(R.id.item_name);
             itemCost = (TextView) itemView.findViewById(R.id.item_descr);
             itemImage = (ImageView) itemView.findViewById(R.id.item_image);

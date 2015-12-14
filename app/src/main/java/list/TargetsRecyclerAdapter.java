@@ -2,6 +2,7 @@ package list;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +21,15 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         implements View.OnClickListener, View.OnLongClickListener {
 
     private final LayoutInflater layoutInflater;
-    private SelectedListener<Target> targetSelectedListener;
+    private TargetClickHandler targetListener;
     private List<Target> targets;
 
     public TargetsRecyclerAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public void setSelectListener(SelectedListener<Target> listener) {
-        targetSelectedListener = listener;
+    public void setSelectListener(TargetClickHandler listener) {
+        targetListener = listener;
     }
 
     //TODO: finish realization of layout item_target (it seems that it is ready)
@@ -59,8 +60,8 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     @Override
     public void onClick(View v) {
         Target target = (Target) v.getTag(R.id.tag_target);
-        if (target != null && targetSelectedListener != null) {
-            targetSelectedListener.onSelected(target);
+        if (target != null && targetListener != null) {
+            targetListener.onSelected(target);
         }
     }
 
@@ -68,6 +69,11 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     public boolean onLongClick(View v) {
         Target target = (Target) v.getTag(R.id.tag_target);
         //TODO: To show a button for deleting the Target
+        if (target != null && targetListener != null) {
+            targetListener.onLongClick(target);
+            int position = v.getVerticalScrollbarPosition();
+
+        }
         return false;
     }
 
@@ -81,6 +87,15 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         }
         targets.add(target);
         notifyItemInserted(targets.size() - 1);
+    }
+
+    public void deleteTarget(int position) {
+        if (position >= targets.size()) {
+            Log.e("TargetAdapter", "Index out of range!");
+        }
+        for (int i = position; i < targets.size() - 1; ++i) {
+
+        }
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {

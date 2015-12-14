@@ -28,10 +28,6 @@ public final class Linker {
     private static final String PARAM_CATEGORY = "CategoryID";
     private static final String PARAM_SELECT = "IncludeSelector";
     //Values
-//    private static final String METHOD_FIND = "findItemsByKeywords";
-//    private static final String METHOD_SHOP = "GetSingleItem";
-//    private static final String VERSION_FIND = "1.0.0";
-//    private static final String VERSION_SHOP = "515";
     private static final String FORMAT_JSON = "JSON";
 
     //URL to method which gives items which match keywords
@@ -51,7 +47,7 @@ public final class Linker {
         Uri uri = Uri.parse(BASE_SHOP_URL).buildUpon()
                 .appendQueryParameter(PARAM_CALL, "GetSingleItem")
                 .appendQueryParameter(PARAM_RESPONSE, FORMAT_JSON)
-                .appendQueryParameter(PARAM_APPID, APP_ID)
+                .appendQueryParameter("appid", APP_ID)
                 .appendQueryParameter(PARAM_VER, "515")
                 .appendQueryParameter(PARAM_ITEM, itemID)
                 .build();
