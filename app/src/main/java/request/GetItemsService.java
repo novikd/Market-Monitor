@@ -43,12 +43,10 @@ public class GetItemsService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        Log.d(TAG, "Service started");
+        Log.d(TAG, "Service running");
         //get the URL for request
         String dataString = workIntent.getDataString();
         long targetId = workIntent.getLongExtra("TARGET_ID", -1);
-
-        Log.d(TAG, "Load items for target " + String.valueOf(targetId));
 
         URL requestURL = null;
         HttpURLConnection connection = null;
@@ -71,7 +69,6 @@ public class GetItemsService extends IntentService {
 
             makeBroadcast(targetId);
 
-            //Log.d(TAG, "Data: " + builder.toString());
         } catch (IOException e) {
             Log.e(TAG, e.toString());
         }
@@ -206,7 +203,6 @@ public class GetItemsService extends IntentService {
                     break;
                 case "galleryURL":
                     res.setImageUrl(readString(reader));
-                    Log.d(TAG, "image url found: " + res.getImageUrl());
                     break;
                 default:
                     reader.skipValue();

@@ -58,6 +58,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         String price = item.getPrice() + " " + item.getBanknote();
         holder.itemCost.setText(price);
 
+        holder.itemImage.setImageBitmap(null);
         ImageLoader.getInstance().displayImage(item.getImageUrl(), holder.itemImage);
         holder.itemLayout.setTag(R.id.tag_item, item); //Если это не сделать, то NPE
         Log.d(TAG, item.getImageUrl());

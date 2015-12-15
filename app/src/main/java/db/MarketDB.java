@@ -131,6 +131,8 @@ public class MarketDB {
 
         item.setTargetId(existingTargetId);
 
+        Log.d(TAG, "Inserting: " + String.valueOf(item.getId()));
+
         long id = db.insert(MarketContract.Items.TABLE, null, values);
         if (id == -1) {
             Log.e(TAG, "error while adding Item to the database");
