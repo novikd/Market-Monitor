@@ -53,7 +53,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         holder.itemName.setText(mItems.get(position).getName());
         holder.itemCost.setText(mItems.get(position).getPrice());
-
+        holder.itemImage.setImageBitmap(null);
         ImageLoader.getInstance().displayImage(mItems.get(position).getImageUrl(), holder.itemImage);
         Log.d(TAG, mItems.get(position).getImageUrl());
     }
