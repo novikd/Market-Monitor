@@ -161,7 +161,3 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, DownloadState> {
 
     private static final String TAG = "GetCategoriesTask";
 }
-
-enum DownloadState {
-    DOWNLOADING, DONE, FAILED
-}

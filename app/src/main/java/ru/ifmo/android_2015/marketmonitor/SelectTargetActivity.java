@@ -19,13 +19,13 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import db.MarketDB;
+import list.TargetClickHandler;
 import list.RecyclerDividerDecorator;
-import list.SelectedListener;
 import list.TargetsRecyclerAdapter;
 import target.Target;
 
 public class SelectTargetActivity extends AppCompatActivity
-        implements SelectedListener<Target> {
+        implements TargetClickHandler {
 
     private RecyclerView recyclerView;
     private FetchTargetsTask fetchTargetsTask;
@@ -112,6 +112,14 @@ public class SelectTargetActivity extends AppCompatActivity
             Target target = data.getParcelableExtra("TARGET");
             adapter.appendTarget(target);
         }
+    }
+
+    @Override
+    public void onLongClick(Target target) {
+        //TODO: Start new activity for asking user
+        //How to get access to database?
+        MarketDB helper = new MarketDB(getApplicationContext());
+        helper.deleteTarget(target);
     }
 
     private static class FetchTargetsTask extends AsyncTask<Void, Void, Boolean> {

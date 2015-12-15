@@ -15,12 +15,13 @@ import java.util.List;
 
 import db.MarketDB;
 import list.ItemsRecyclerAdapter;
+import list.SelectedListener;
 import target.Item;
 
 /**
  * Created by ruslanthakohov on 03/12/15.
  */
-public class ItemsActivity extends AppCompatActivity {
+public class ItemsActivity extends AppCompatActivity implements SelectedListener<Item> {
     private static final String TAG = ItemsActivity.class.getSimpleName();
 
     List<Item> items;
@@ -43,7 +44,7 @@ public class ItemsActivity extends AppCompatActivity {
 
         mItemsAdapter = new ItemsRecyclerAdapter(this, items);
         mItemsRecyclerView.setAdapter(mItemsAdapter);
-
+        mItemsAdapter.setSelectListener(this);
         //get target id
         Intent intent = getIntent();
         long targetId = intent.getLongExtra(SelectTargetActivity.TARGET_ID_EXTRA, 0);
@@ -56,6 +57,15 @@ public class ItemsActivity extends AppCompatActivity {
         mItemsAdapter.setData(items);
         mItemsAdapter.notifyDataSetChanged();
         mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onSelected(Item item) {
+        Log.i("OnItemSelected", "Item name: " + item.getName());
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.EXTRA_ITEM, item);
+        Log.d("Image: ", item.getImageUrl());
+        startActivity(intent);
     }
 
     private static class FetchItemsTask extends AsyncTask<Long, Void, FetchState> {

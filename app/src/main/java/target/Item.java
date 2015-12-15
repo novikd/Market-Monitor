@@ -2,6 +2,7 @@ package target;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * Created by novik on 07.11.15.
@@ -17,6 +18,7 @@ public class Item implements Parcelable {
     protected Item(Parcel in) {
         name = in.readString();
         url = in.readString();
+        imageUrl = in.readString();
         price = in.readString();
         banknote = in.readString();
         id = in.readLong();
@@ -72,6 +74,7 @@ public class Item implements Parcelable {
     }
 
     public void setId(long id) {
+        Log.d("ItemIdInitialized", "Item's id: " + String.valueOf(id));
         this.id = id;
     }
 
@@ -114,6 +117,7 @@ public class Item implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(url);
+        dest.writeString(imageUrl);
         dest.writeString(price);
         dest.writeString(banknote);
         dest.writeLong(id);
