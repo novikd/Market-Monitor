@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         Target target = targets.get(position);
 
         holder.targetNameView.setText(target.name);
-        holder.targetNameView.setTag(R.id.tag_target, target);
+        holder.targetLayout.setTag(R.id.tag_target, target);
     }
 
     @Override
@@ -99,12 +100,14 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     }
 
     static class TargetViewHolder extends RecyclerView.ViewHolder {
+        final LinearLayout targetLayout;
         final TextView targetNameView;
 
         public TargetViewHolder(View itemView) {
             super(itemView);
 
             targetNameView = (TextView) itemView.findViewById(R.id.target_name);
+            targetLayout = (LinearLayout) itemView.findViewById(R.id.target_layout);
         }
     }
 }
