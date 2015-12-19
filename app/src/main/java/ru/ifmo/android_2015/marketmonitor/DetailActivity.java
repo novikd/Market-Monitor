@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,7 +22,7 @@ import target.Item;
 /**
  * Created by novik on 13.12.15.
  */
-public class DetailActivity extends Activity {
+public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_ITEM = "item";
 
     private Item item;
@@ -65,7 +66,7 @@ public class DetailActivity extends Activity {
     }
 
     @Override
-    public Object onRetainNonConfigurationInstance() {
+    public Object onRetainCustomNonConfigurationInstance() {
         return detailsTask;
     }
 

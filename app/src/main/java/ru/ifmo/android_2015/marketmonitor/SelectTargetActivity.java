@@ -1,5 +1,8 @@
 package ru.ifmo.android_2015.marketmonitor;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -18,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import alarm.UpdateAllTargetsService;
 import db.MarketDB;
 import list.TargetClickHandler;
 import list.RecyclerDividerDecorator;
@@ -33,17 +37,6 @@ public class SelectTargetActivity extends AppCompatActivity
 
     public void targetsAreReady(List<Target> targets) {
         adapter.targetsAreReady(targets);
-
-        /*for (Target target : targets) {
-            Intent serviceIntent = new Intent(this, GetItemsService.class);
-            try {
-                serviceIntent.setData(Uri.parse(Linker.createFindUrl(target.getName()).toString()));
-            } catch (Exception e) {
-                Log.d(TAG, "URL Exception: " + e.toString());
-            }
-            serviceIntent.putExtra("TARGET_ID", target.getId());
-            startService(serviceIntent);
-        }*/
     }
 
     @Override
