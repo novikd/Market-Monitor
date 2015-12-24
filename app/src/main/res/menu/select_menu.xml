@@ -3,8 +3,11 @@
     xmlns:market_monitor="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add"
-        android:title="Add new target"
+        android:title="@string/add_target_string"
         android:icon="@mipmap/ic_action_new"
-        android:onClick="addNewTarget"
-        market_monitor:showAsAction="always" />
+        market_monitor:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/settings_string"
+        market_monitor:showAsAction="never"/>
 </menu>

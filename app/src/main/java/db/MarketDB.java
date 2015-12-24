@@ -34,6 +34,7 @@ public class MarketDB {
 
         ContentValues values = new ContentValues();
         values.put(MarketContract.TargetColumns.TARGET_NAME, target.name);
+        values.put(MarketContract.TargetColumns.TARGET_LOADED, target.isLoaded() ? 1 : 0);
 
         long id = db.insert(MarketContract.Targets.TABLE, null, values);
         if (id == -1) {
@@ -52,7 +53,7 @@ public class MarketDB {
     public void deleteTarget(Target target) {
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        deleteItemsForTarget(target, db);
+        deleteItemsForTarget(target.getId(), db);
 
         db.delete(MarketContract.Targets.TABLE, MarketContract.TargetColumns.TARGET_ID + " = ?",
                 new String[]{String.valueOf(target.getId())});
@@ -63,6 +64,19 @@ public class MarketDB {
 
         db.delete(MarketContract.Targets.TABLE, null, null);
         db.delete(MarketContract.Items.TABLE, null, null);
+    }
+
+    public void setTargetLoaded(long id, boolean isLoaded) {
+        int value = isLoaded ? 1 : 0;
+        ContentValues values = new ContentValues();
+        values.put(MarketContract.TargetColumns.TARGET_LOADED, value);
+
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        String updateQuery = "UPDATE " + MarketContract.Targets.TABLE + " SET " +
+                MarketContract.TargetColumns.TARGET_LOADED + " = " + String.valueOf(value);
+        Log.d(TAG, "update query = " + updateQuery);
+        db.execSQL(updateQuery);
     }
 
     /**
@@ -82,6 +96,7 @@ public class MarketDB {
                 for (; !cursor.isAfterLast(); cursor.moveToNext()) {
                     Target target = new Target(cursor.getString(1));
                     target.setId(cursor.getLong(0));
+                    target.setLoaded(cursor.getInt(2) == 1);
                     targets.add(target);
                 }
             }
@@ -188,15 +203,15 @@ public class MarketDB {
 
     /**
      * Delete all items associated with a given target
-     * @param target     Target object
+     * @param targetId     Target object id
      */
-    public void deleteItemsForTarget(Target target) {
+    public void deleteItemsForTarget(long targetId) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        deleteItemsForTarget(target, db);
+        deleteItemsForTarget(targetId, db);
     }
 
-    private void deleteItemsForTarget(Target target, SQLiteDatabase db) {
-        String whereClause = MarketContract.ItemColumns.ITEM_TARGET_ID + " = " + String .valueOf(target.getId());
+    private void deleteItemsForTarget(long targetId, SQLiteDatabase db) {
+        String whereClause = MarketContract.ItemColumns.ITEM_TARGET_ID + " = " + String .valueOf(targetId);
         db.delete(MarketContract.Items.TABLE, whereClause, null);
     }
 }

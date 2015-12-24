@@ -1,8 +1,14 @@
 package ru.ifmo.android_2015.marketmonitor;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,10 +24,12 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import alarm.UpdateAllTargetsService;
 import db.MarketDB;
 import list.TargetClickHandler;
 import list.RecyclerDividerDecorator;
 import list.TargetsRecyclerAdapter;
+import request.GetItemsService;
 import target.Target;
 
 public class SelectTargetActivity extends AppCompatActivity
@@ -31,19 +39,11 @@ public class SelectTargetActivity extends AppCompatActivity
     private FetchTargetsTask fetchTargetsTask;
     private TargetsRecyclerAdapter adapter;
 
-    public void targetsAreReady(List<Target> targets) {
-        adapter.targetsAreReady(targets);
+    private BroadcastReceiver receiver = null;
 
-        /*for (Target target : targets) {
-            Intent serviceIntent = new Intent(this, GetItemsService.class);
-            try {
-                serviceIntent.setData(Uri.parse(Linker.createFindUrl(target.getName()).toString()));
-            } catch (Exception e) {
-                Log.d(TAG, "URL Exception: " + e.toString());
-            }
-            serviceIntent.putExtra("TARGET_ID", target.getId());
-            startService(serviceIntent);
-        }*/
+    public void targetsAreReady(List<Target> targets) {
+        Log.d(TAG, String.valueOf(targets.size()));
+        adapter.targetsAreReady(targets);
     }
 
     @Override
@@ -51,6 +51,8 @@ public class SelectTargetActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_select_target);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preference_screen, false);
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
@@ -72,6 +74,35 @@ public class SelectTargetActivity extends AppCompatActivity
         } else {
             fetchTargetsTask.attachActivity(this);
         }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //register receiver
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                fetchTargetsTask = new FetchTargetsTask(SelectTargetActivity.this);
+                fetchTargetsTask.execute();
+                Log.d(TAG, "Broadcast processed");
+            }
+        };
+
+        IntentFilter filter = new IntentFilter("UPDATE_TARGETS");
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
     }
 
     @Override
@@ -80,12 +111,14 @@ public class SelectTargetActivity extends AppCompatActivity
     }
 
     public static final String TARGET_ID_EXTRA = "targetIdExtra";
+    public static final String TARGET_LOADED_EXTRA = "targetLoadedExtra";
 
     @Override
     public void onSelected(Target target) {
-        Log.i(TAG, "Target selected: " + target.getName());
+        Log.i(TAG, "Target selected: " + target.getName() + " " + String.valueOf(target.isLoaded()));
         Intent intent = new Intent(this, ItemsActivity.class);
         intent.putExtra(TARGET_ID_EXTRA, target.getId());
+        intent.putExtra(TARGET_LOADED_EXTRA, target.isLoaded());
         startActivity(intent);
     }
 
@@ -97,21 +130,37 @@ public class SelectTargetActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void addNewTarget(MenuItem menuItem) {
-        Log.i(TAG, "Add new button was clicked");
-        //TODO: start the AddTargetActivity
-        Intent addTargetActivity = new Intent(this, AddTargetActivity.class);
-        startActivityForResult(addTargetActivity, 1);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_add:
+                Log.i(TAG, "Add new button was clicked");
+                //TODO: start the AddTargetActivity
+                Intent addTargetActivity = new Intent(this, AddTargetActivity.class);
+                startActivityForResult(addTargetActivity, 1);
+                break;
+            case R.id.action_settings:
+                Log.d(TAG, "Settings clicked");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
+        /*if (resultCode == RESULT_OK) {
             Target target = data.getParcelableExtra("TARGET");
             adapter.appendTarget(target);
-        }
+        }*/
+        fetchTargetsTask = new FetchTargetsTask(this);
+        fetchTargetsTask.execute();
     }
 
     @Override
@@ -135,9 +184,10 @@ public class SelectTargetActivity extends AppCompatActivity
 
         @Override
         public Boolean doInBackground(Void ... params) {
+            Log.d(TAG, "FetchTargetTask running");
             MarketDB helper = new MarketDB(activity.get().getApplicationContext());
             targets =  helper.getAllTargets();
-
+            Log.d(TAG, "Targets fetched");
             return true;
         }
 

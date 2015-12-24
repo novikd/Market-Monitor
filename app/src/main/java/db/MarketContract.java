@@ -19,6 +19,14 @@ public final class MarketContract {
          * SQLite type: TEXT
          */
         String TARGET_NAME = "name";
+
+        /**
+         * Indicates whether data for this target
+         * has been loaded (=1) or not (=0)
+         *
+         * SQLite type: INTEGER
+         */
+        String TARGET_LOADED = "loaded";
     }
 
     public static final class Targets implements TargetColumns {
@@ -27,7 +35,8 @@ public final class MarketContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE +
                 "(" +
                 TARGET_ID + " INTEGER PRIMARY KEY, " +
-                TARGET_NAME + " TEXT" +
+                TARGET_NAME + " TEXT, " +
+                TARGET_LOADED + " INTEGER" +
                 ")";
 
 
