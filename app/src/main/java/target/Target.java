@@ -12,6 +12,8 @@ public class Target implements Parcelable {
     private long id; //unique identifier of the target
                      //this is set for targets in the
                      //db
+    private boolean isLoaded;
+
     public String name;
 
     public Target(String itemName) {
@@ -21,6 +23,7 @@ public class Target implements Parcelable {
     protected Target(Parcel in) {
         id = in.readLong();
         name = in.readString();
+        isLoaded = in.readByte() == 1;
     }
 
     public static final Creator<Target> CREATOR = new Creator<Target>() {
@@ -47,6 +50,14 @@ public class Target implements Parcelable {
         return id;
     }
 
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void setLoaded(boolean isLoaded) {
+        this.isLoaded = isLoaded;
+    }
+
     @Override
     public boolean equals(Object target) {
         if (target.getClass() == Target.class) {
@@ -70,5 +81,6 @@ public class Target implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
         dest.writeString(name);
+        dest.writeByte(isLoaded ? (byte) 1 : (byte) 0);
     }
 }

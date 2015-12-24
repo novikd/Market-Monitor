@@ -14,12 +14,12 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             //set the alarm
-            Intent serviceIntent = new Intent(context, UpdateAllTargetsService.class);
+            /*Intent serviceIntent = new Intent(context, UpdateAllTargetsService.class);
             PendingIntent pIntent = PendingIntent.getService(context, 1, serviceIntent, 0);
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                    10000, 60000 * 2, pIntent);
+                    10000, 60000 * 2, pIntent);*/
         }
     }
 }

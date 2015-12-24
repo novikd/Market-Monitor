@@ -64,8 +64,11 @@ public class GetItemsService extends IntentService {
             }
 
             in = connection.getInputStream();
+            db.deleteItemsForTarget(targetId);
             db.addItemsForTarget(targetId, readJsonResponse(in));
             Log.d(TAG, "Data saved to the db");
+
+            db.setTargetLoaded(targetId, true);
 
             makeBroadcast(targetId);
 
@@ -75,14 +78,18 @@ public class GetItemsService extends IntentService {
 
     }
 
+    public static final String UPDATED_TARGET_ID = "updatedTargetID";
+    public static final String UPDATE_TARGET_ACTION = "UPDATE_ITEMS";
     /**
      * Sends a broadcast that items for a target have been updated
      * @param id    id of the updated target
      */
     private void makeBroadcast(long id) {
-        Intent intent = new Intent("UPDATE_ITEMS");
-        intent.putExtra("UPDATED_TARGET_ID", id);
+        Intent intent = new Intent(UPDATE_TARGET_ACTION);
+        intent.putExtra(UPDATED_TARGET_ID, id);
         sendBroadcast(intent);
+
+        sendBroadcast(new Intent("UPDATE_TARGETS"));
     }
 
     private List<Item> readJsonResponse(InputStream in) throws IOException {

@@ -7,4 +7,29 @@
     <string name="categories_load_error">Failed to load the categories</string>
     <string name="specify_target_error">You need to specify target!</string>
     <string name="title_activity_items">Items</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name = "pref_sync_title">Look for new offers</string>
+    <string name = "pref_sync_summary">The app will check up on new offers automatically</string>
+    <string name = "pref_sync_frequency">Check every...</string>
+    <string name="add_target_string">Add</string>
+    <string name="settings_string">Settings</string>
+    
+    <string-array name="pref_sync_frequency_values_readable">
+        <item>2 mins (debug)</item>
+        <item>3 mins (debug)</item>
+        <item>30 mins</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>2</item>
+        <item>3</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+    </string-array>
+    <integer name="pref_sync_frequency_default">30</integer>
 </resources>

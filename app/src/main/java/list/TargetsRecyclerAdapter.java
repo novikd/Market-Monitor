@@ -80,6 +80,7 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
 
     public void targetsAreReady(List<Target> targets) {
         this.targets = targets;
+        notifyDataSetChanged();
     }
 
     public void appendTarget(Target target) {

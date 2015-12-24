@@ -1,6 +1,9 @@
 package ru.ifmo.android_2015.marketmonitor;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +19,7 @@ import java.util.List;
 import db.MarketDB;
 import list.ItemsRecyclerAdapter;
 import list.SelectedListener;
+import request.GetItemsService;
 import target.Item;
 
 /**
@@ -29,6 +33,7 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
     private RecyclerView mItemsRecyclerView;
     private ItemsRecyclerAdapter mItemsAdapter;
     private ProgressBar mProgressBar;
+    private FetchItemsTask task = null;
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -45,12 +50,41 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
         mItemsAdapter = new ItemsRecyclerAdapter(this, items);
         mItemsRecyclerView.setAdapter(mItemsAdapter);
         mItemsAdapter.setSelectListener(this);
+
         //get target id
         Intent intent = getIntent();
-        long targetId = intent.getLongExtra(SelectTargetActivity.TARGET_ID_EXTRA, 0);
+        final long targetId = intent.getLongExtra(SelectTargetActivity.TARGET_ID_EXTRA, 0);
 
-        //TODO: Handle configuration changes
-        new FetchItemsTask(this).execute(targetId);
+        if (savedInstance != null) {
+            task = (FetchItemsTask) getLastCustomNonConfigurationInstance();
+        }
+
+        if (task == null) {
+            if (intent.getBooleanExtra(SelectTargetActivity.TARGET_LOADED_EXTRA, false)) {
+                task = new FetchItemsTask(this);
+                task.execute(targetId);
+            }
+        } else {
+            task.attachActivity(this);
+        }
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (task == null) {
+                    task = new FetchItemsTask(ItemsActivity.this);
+                    task.execute(targetId);
+                } else {
+                    task.attachActivity(ItemsActivity.this);
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(GetItemsService.UPDATE_TARGET_ACTION);
+        registerReceiver(receiver, filter);
+
+        //TODO: unregister receiver
+
     }
 
     private void onDataUpdate() {
@@ -74,7 +108,7 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
         FetchState status;
 
         FetchItemsTask(ItemsActivity activity) {
-            this.activity = activity;
+            attachActivity(activity);
         }
 
         @Override
@@ -109,6 +143,11 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
         @Override
         public void onProgressUpdate(Void ... progress) {
             updateUI();
+        }
+
+        public void attachActivity(ItemsActivity activity) {
+            this.activity = activity;
+            publishProgress();
         }
 
         private void updateUI() {
