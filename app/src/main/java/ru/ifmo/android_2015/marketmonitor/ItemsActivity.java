@@ -34,6 +34,7 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
     private ItemsRecyclerAdapter mItemsAdapter;
     private ProgressBar mProgressBar;
     private FetchItemsTask task = null;
+    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -68,7 +69,7 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
             task.attachActivity(this);
         }
 
-        BroadcastReceiver receiver = new BroadcastReceiver() {
+        receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (task == null) {
@@ -83,8 +84,14 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
         IntentFilter filter = new IntentFilter(GetItemsService.UPDATE_TARGET_ACTION);
         registerReceiver(receiver, filter);
 
-        //TODO: unregister receiver
+        //TODO: unregister receiver (Is it done ?)
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
     }
 
     private void onDataUpdate() {

@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import alarm.UpdateAllTargetsService;
 import db.MarketDB;
+import db.MarketHelper;
 import list.TargetClickHandler;
 import list.RecyclerDividerDecorator;
 import list.TargetsRecyclerAdapter;
@@ -161,6 +163,15 @@ public class SelectTargetActivity extends AppCompatActivity
         }*/
         fetchTargetsTask = new FetchTargetsTask(this);
         fetchTargetsTask.execute();
+    }
+
+    public void onDelete(View v) {
+        Log.d("SelectTargerActivity", "onDelete pressed");
+        Target target = (Target) v.getTag(R.id.tag_target);
+        int position = (int) v.getTag(R.id.tag_position);
+        MarketDB helper = new MarketDB(getApplicationContext());
+        helper.deleteTarget(target);
+        adapter.onDeleteClick(position);
     }
 
     @Override

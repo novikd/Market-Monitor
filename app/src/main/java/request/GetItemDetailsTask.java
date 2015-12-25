@@ -3,7 +3,10 @@ package request;
 import android.os.AsyncTask;
 import android.util.JsonReader;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +56,8 @@ public class GetItemDetailsTask extends AsyncTask<Item, Void, ItemDetails> {
             textView = (TextView) activity.findViewById(R.id.item_status);
             temp = "Status: " + details.getStatus();
             textView.setText(temp);
+            ImageView imageView = (ImageView) activity.findViewById(R.id.item_detail_image);
+            ImageLoader.getInstance().displayImage(details.getViewURL(), imageView);
         } else if (activity != null && activity.state == DownloadState.FAILED) {
             TextView textView = (TextView) activity.findViewById(R.id.item_detail_name);
             textView.setText("Getting item's details error occurred.");
@@ -65,10 +70,12 @@ public class GetItemDetailsTask extends AsyncTask<Item, Void, ItemDetails> {
         InputStream in = null;
         try {
             URL url = Linker.createShopUrl(String.valueOf(params[0].getId()));
+            Log.i("GettingDetails", "URL: " + url);
             connection = (HttpURLConnection) url.openConnection();
             in = connection.getInputStream();
 
             ItemDetails details = readJSON(in);
+            Log.i("GettingDetalis", "JSON parsed: " + params[0].getName());
             return details;
         } catch (Exception e) {
             Log.e("GettingDetails", "Error occurred: " + e);
@@ -112,7 +119,7 @@ public class GetItemDetailsTask extends AsyncTask<Item, Void, ItemDetails> {
 
     private ItemDetails readItem(JsonReader reader) throws IOException {
         ItemDetails result = null;
-        String url = "", type = "", status = "", country = "", location = "";
+        String url = null, type = "", status = "", country = "", location = "";
         String cost = "", banknote = "";
 
         while (reader.hasNext()) {
@@ -135,8 +142,14 @@ public class GetItemDetailsTask extends AsyncTask<Item, Void, ItemDetails> {
                     }
                     reader.endObject();
                     break;
-                case "ViewItemURLForNaturalSearch":
-                    url = reader.nextString();
+                case "PictureURL":
+                    reader.beginArray();
+                    while (reader.hasNext()) {
+                        String temp = reader.nextString();
+                        if (url == null)
+                            url = temp;
+                    }
+                    reader.endArray();
                     break;
                 case "ListingType":
                     type = reader.nextString();
