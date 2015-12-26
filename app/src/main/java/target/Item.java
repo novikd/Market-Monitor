@@ -8,7 +8,8 @@ import android.util.Log;
  * Created by novik on 07.11.15.
  */
 public class Item implements Parcelable {
-    private String name, url, price, banknote, imageUrl;
+    private String name, url, banknote, imageUrl;
+    float price;
     long id;
     private long targetId; //id of the target which this item
                            //is associated with
@@ -19,7 +20,7 @@ public class Item implements Parcelable {
         name = in.readString();
         url = in.readString();
         imageUrl = in.readString();
-        price = in.readString();
+        price = in.readFloat();
         banknote = in.readString();
         id = in.readLong();
         targetId = in.readLong();
@@ -45,7 +46,7 @@ public class Item implements Parcelable {
         return url;
     }
 
-    public String getPrice() {
+    public float getPrice() {
         return price;
     }
 
@@ -69,7 +70,7 @@ public class Item implements Parcelable {
         this.url = url;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -118,7 +119,7 @@ public class Item implements Parcelable {
         dest.writeString(name);
         dest.writeString(url);
         dest.writeString(imageUrl);
-        dest.writeString(price);
+        dest.writeFloat(price);
         dest.writeString(banknote);
         dest.writeLong(id);
         dest.writeLong(targetId);

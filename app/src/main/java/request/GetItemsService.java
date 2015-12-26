@@ -64,9 +64,17 @@ public class GetItemsService extends IntentService {
             }
 
             in = connection.getInputStream();
+            List<Item> oldItems = db.getItemsForTarget(targetId);
+            List<Item> newItems = readJsonResponse(in);
             db.deleteItemsForTarget(targetId);
-            db.addItemsForTarget(targetId, readJsonResponse(in));
+            db.addItemsForTarget(targetId, newItems);
             Log.d(TAG, "Data saved to the db");
+
+            if (oldItems.size() > 0 && newItems.size() > 0) {
+                //TODO: update min price
+
+
+            }
 
             db.setTargetLoaded(targetId, true);
 
@@ -230,7 +238,7 @@ public class GetItemsService extends IntentService {
             if (name.equals("@currencyId")) {
                 res.setBanknote(reader.nextString());
             } else if (name.equals("__value__")) {
-                res.setPrice(reader.nextString());
+                res.setPrice(Float.parseFloat(reader.nextString()));
             } else {
                 reader.skipValue();
             }

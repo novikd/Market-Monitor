@@ -184,7 +184,7 @@ public class GetItemsFromTargetTask extends AsyncTask<URL, Void, ArrayList<Item>
             if (name.equals("@currencyId")) {
                 res.setBanknote(reader.nextString());
             } else if (name.equals("__value__")) {
-                res.setPrice(reader.nextString());
+                res.setPrice(Float.parseFloat(reader.nextString()));
             } else {
                 reader.skipValue();
             }

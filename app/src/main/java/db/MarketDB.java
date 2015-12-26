@@ -180,7 +180,7 @@ public class MarketDB {
                     Item item = new Item();
                     item.setName(cursor.getString(1));
                     item.setUrl(cursor.getString(2));
-                    item.setPrice(cursor.getString(3));
+                    item.setPrice(cursor.getFloat(3));
                     item.setId(cursor.getLong(0));
                     item.setBanknote(cursor.getString(4));
                     item.setImageUrl(cursor.getString(6));
