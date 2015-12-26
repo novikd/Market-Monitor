@@ -126,14 +126,15 @@ public class AddTargetActivity extends AppCompatActivity
         } catch (Exception e) {
             Log.d(TAG, "URL Exception: " + e.toString());
         }
-        serviceIntent.putExtra("TARGET_ID", target.getId());
+        serviceIntent.putExtra(GetItemsService.TARGET_ID_EXTRA, target.getId());
+        serviceIntent.putExtra(GetItemsService.TARGET_NAME_EXTRA, target.getName());
         startService(serviceIntent);
 
         //TODO: add constants for result code and success flag
 
         //send result back to the calling activity
         Intent intent = new Intent();
-        intent.putExtra("TARGET", target);
+        intent.putExtra(SelectTargetActivity.SHOULD_RELOAD_TARGETS_EXTRA, true);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -161,6 +161,23 @@ public class MarketDB {
         return getItemsForTarget(target.getId());
     }
 
+    public Item getBestItemForTarget(long targetId) {
+        List<Item> items = getItemsForTarget(targetId);
+
+        if (items.size() == 0) {
+            return null;
+        }
+
+        int bestIndex = 0;
+        for (int i = 1; i < items.size(); i++) {
+            if (items.get(i).getPrice() < items.get(bestIndex).getPrice()) {
+                bestIndex = i;
+            }
+        }
+
+        return items.get(bestIndex);
+    }
+
     public List<Item> getItemsForTarget(long targetId) {
         ArrayList<Item> items = new ArrayList<>();
 

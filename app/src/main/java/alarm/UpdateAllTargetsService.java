@@ -47,7 +47,8 @@ public class UpdateAllTargetsService extends Service implements Runnable {
             } catch (Exception e) {
                 Log.d(TAG, "URL Exception: " + e.toString());
             }
-            serviceIntent.putExtra("TARGET_ID", target.getId());
+            serviceIntent.putExtra(GetItemsService.TARGET_ID_EXTRA, target.getId());
+            serviceIntent.putExtra(GetItemsService.TARGET_NAME_EXTRA, target.getName());
             startService(serviceIntent);
         }
         stopSelf();

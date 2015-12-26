@@ -57,10 +57,12 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
         final long targetId = intent.getLongExtra(SelectTargetActivity.TARGET_ID_EXTRA, 0);
 
         if (savedInstance != null) {
+            Log.d(TAG, "Saved task found");
             task = (FetchItemsTask) getLastCustomNonConfigurationInstance();
         }
 
         if (task == null) {
+            Log.d(TAG, String.valueOf(intent.getBooleanExtra(SelectTargetActivity.TARGET_LOADED_EXTRA, false)));
             if (intent.getBooleanExtra(SelectTargetActivity.TARGET_LOADED_EXTRA, false)) {
                 task = new FetchItemsTask(this);
                 task.execute(targetId);
@@ -89,9 +91,17 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
     }
 
     @Override
-    protected void onDestroy() {
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(SelectTargetActivity.SHOULD_RELOAD_TARGETS_EXTRA, true);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
         unregisterReceiver(receiver);
-        super.onDestroy();
+        super.onPause();
     }
 
     private void onDataUpdate() {
