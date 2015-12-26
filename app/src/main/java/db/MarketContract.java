@@ -74,7 +74,7 @@ public final class MarketContract {
         /**
          * Item banknote
          *
-         * SQLite type: TEXT
+         * SQLite type: REAL
          */
         String ITEM_BANKNOTE = "banknote";
 
@@ -101,7 +101,7 @@ public final class MarketContract {
                 ITEM_ID + " INTEGER, " +
                 ITEM_NAME + " TEXT, " +
                 ITEM_URL + " TEXT, " +
-                ITEM_PRICE + " TEXT, " +
+                ITEM_PRICE + " REAL, " +
                 ITEM_BANKNOTE + " TEXT, " +
                 ITEM_TARGET_ID + " INTEGER, " +
                 ITEM_IMAGE_URL + " TEXT" +
