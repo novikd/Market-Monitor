@@ -5,7 +5,11 @@ package request;
  */
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 import android.util.JsonReader;
 import android.util.Log;
 
@@ -20,7 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.MarketDB;
+import ru.ifmo.android_2015.marketmonitor.DetailActivity;
+import ru.ifmo.android_2015.marketmonitor.R;
 import target.Item;
+
+import static android.support.v7.app.NotificationCompat.*;
 
 /**
  * This service makes a FindingService request to the API,
@@ -29,6 +37,9 @@ import target.Item;
 public class GetItemsService extends IntentService {
     private static final String SERVICE_NAME = GetItemsService.class.getSimpleName();
     private static final String TAG = "GetItemsService";
+
+    public static final String TARGET_ID_EXTRA = "targetId";
+    public static final String TARGET_NAME_EXTRA = "targetName";
 
     private MarketDB db;
 
@@ -46,7 +57,8 @@ public class GetItemsService extends IntentService {
         Log.d(TAG, "Service running");
         //get the URL for request
         String dataString = workIntent.getDataString();
-        long targetId = workIntent.getLongExtra("TARGET_ID", -1);
+        long targetId = workIntent.getLongExtra(TARGET_ID_EXTRA, -1);
+        String targetName = workIntent.getStringExtra(TARGET_NAME_EXTRA);
 
         URL requestURL = null;
         HttpURLConnection connection = null;
@@ -63,17 +75,21 @@ public class GetItemsService extends IntentService {
                 + ", " + connection.getResponseMessage());
             }
 
+            Item bestItemOld = db.getBestItemForTarget(targetId);
             in = connection.getInputStream();
-            List<Item> oldItems = db.getItemsForTarget(targetId);
-            List<Item> newItems = readJsonResponse(in);
             db.deleteItemsForTarget(targetId);
-            db.addItemsForTarget(targetId, newItems);
+            db.addItemsForTarget(targetId, readJsonResponse(in));
             Log.d(TAG, "Data saved to the db");
 
-            if (oldItems.size() > 0 && newItems.size() > 0) {
-                //TODO: update min price
+            //check up on best offer
+            Item bestItem = db.getBestItemForTarget(targetId);
+            if (bestItem != null) {
+                if (bestItemOld == null || !bestItem.equals(bestItemOld)) {
+                    Log.d(TAG, "new best item: " + bestItem.getName());
+                    makeNotification(targetName, bestItem);
 
 
+                }
             }
 
             db.setTargetLoaded(targetId, true);
@@ -98,6 +114,34 @@ public class GetItemsService extends IntentService {
         sendBroadcast(intent);
 
         sendBroadcast(new Intent("UPDATE_TARGETS"));
+    }
+
+    /**
+     * Make a notification about new minimum price
+     */
+    private void makeNotification(String targetName, Item item) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                                .setContentTitle("New offer on " + targetName)
+                                .setContentText("Click to see details");
+
+        Intent resultIntent = new Intent(getApplicationContext(), DetailActivity.class);
+        resultIntent.putExtra(DetailActivity.EXTRA_ITEM, item);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        int mNotificationId = 001;
+// Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
     }
 
     private List<Item> readJsonResponse(InputStream in) throws IOException {

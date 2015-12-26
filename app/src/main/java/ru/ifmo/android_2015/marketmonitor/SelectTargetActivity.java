@@ -114,6 +114,7 @@ public class SelectTargetActivity extends AppCompatActivity
 
     public static final String TARGET_ID_EXTRA = "targetIdExtra";
     public static final String TARGET_LOADED_EXTRA = "targetLoadedExtra";
+    public static final int RELOAD_TARGETS_REQUEST = 100;
 
     @Override
     public void onSelected(Target target) {
@@ -121,7 +122,7 @@ public class SelectTargetActivity extends AppCompatActivity
         Intent intent = new Intent(this, ItemsActivity.class);
         intent.putExtra(TARGET_ID_EXTRA, target.getId());
         intent.putExtra(TARGET_LOADED_EXTRA, target.isLoaded());
-        startActivity(intent);
+        startActivityForResult(intent, RELOAD_TARGETS_REQUEST);
     }
 
     @Override
@@ -153,16 +154,21 @@ public class SelectTargetActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public static final String SHOULD_RELOAD_TARGETS_EXTRA = "shouldReloadTargets";
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
 
-        /*if (resultCode == RESULT_OK) {
-            Target target = data.getParcelableExtra("TARGET");
-            adapter.appendTarget(target);
-        }*/
-        fetchTargetsTask = new FetchTargetsTask(this);
-        fetchTargetsTask.execute();
+        if (resultCode == RESULT_OK) {
+            boolean flag = data.getBooleanExtra(SHOULD_RELOAD_TARGETS_EXTRA, false);
+            if (flag) {
+                Log.d(TAG, "updating targets");
+                fetchTargetsTask = new FetchTargetsTask(this);
+                fetchTargetsTask.execute();
+            }
+        }
     }
 
     public void onDelete(View v) {
