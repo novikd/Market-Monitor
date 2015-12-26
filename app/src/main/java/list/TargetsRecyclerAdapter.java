@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,7 +21,7 @@ import target.Target;
  * Created by novik on 05.11.15.
  */
 public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecyclerAdapter.TargetViewHolder>
-        implements View.OnClickListener, View.OnLongClickListener {
+        implements View.OnClickListener {
 
     private final LayoutInflater layoutInflater;
     private TargetClickHandler targetListener;
@@ -47,6 +49,8 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
 
         holder.targetNameView.setText(target.name);
         holder.targetLayout.setTag(R.id.tag_target, target);
+        holder.deleteButton.setTag(R.id.tag_target, target);
+        holder.deleteButton.setTag(R.id.tag_position, position);
     }
 
     @Override
@@ -66,16 +70,10 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         }
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        Target target = (Target) v.getTag(R.id.tag_target);
+    public void onDeleteClick(int position) {
         //TODO: To show a button for deleting the Target
-        if (target != null && targetListener != null) {
-            targetListener.onLongClick(target);
-            int position = v.getVerticalScrollbarPosition();
-
-        }
-        return false;
+        targets.remove(position);
+        notifyItemRemoved(position);
     }
 
     public void targetsAreReady(List<Target> targets) {
@@ -103,12 +101,14 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
     static class TargetViewHolder extends RecyclerView.ViewHolder {
         final LinearLayout targetLayout;
         final TextView targetNameView;
+        final ImageView deleteButton;
 
         public TargetViewHolder(View itemView) {
             super(itemView);
 
             targetNameView = (TextView) itemView.findViewById(R.id.target_name);
             targetLayout = (LinearLayout) itemView.findViewById(R.id.target_layout);
+            deleteButton = (ImageView) itemView.findViewById(R.id.delete_target);
         }
     }
 }

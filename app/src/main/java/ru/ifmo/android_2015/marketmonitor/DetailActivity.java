@@ -38,7 +38,7 @@ public class DetailActivity extends AppCompatActivity {
 
         item = getIntent().getParcelableExtra(EXTRA_ITEM);
         //TODO: Загружать нормальные картинки, а не эту маленькую.
-        ImageLoader.getInstance().displayImage(item.getImageUrl(), (ImageView) findViewById(R.id.item_detail_image));
+//        ImageLoader.getInstance().displayImage(item.getImageUrl(), (ImageView) findViewById(R.id.item_detail_image));
 
         if (savedInstanceState != null) {
             detailsTask = (GetItemDetailsTask) getLastNonConfigurationInstance();

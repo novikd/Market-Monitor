@@ -13,19 +13,14 @@ public class ItemDetails {
 
     private Item item;
     private String type, status, country, location;
-    private URL viewURL;
+    private String viewURL;
     private String cost;
     private String banknote;
 
     public ItemDetails() {}
 
     public ItemDetails(String url, String type, String status, String country, String location) {
-        try {
-            viewURL  = new URL(url);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Parsing url error occurred: " + e);
-            e.printStackTrace();
-        }
+        viewURL  = url;
         this.type = type;
         this.status = status;
         this.country = country;
@@ -40,11 +35,11 @@ public class ItemDetails {
         return item;
     }
 
-    public URL getViewURL() {
+    public String getViewURL() {
         return viewURL;
     }
 
-    public void setViewURL(URL viewURL) {
+    public void setViewURL(String viewURL) {
         this.viewURL = viewURL;
     }
 

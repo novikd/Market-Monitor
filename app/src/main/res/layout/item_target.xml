@@ -16,19 +16,30 @@
         android:id="@+id/target_card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         card_view:cardCornerRadius="4dp">
 
         <TextView
-            android:layout_gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/target_name"
             android:layout_alignParentTop="true"
             android:textSize="18sp"
+            android:textColor="#00002C"
             android:text="This is target name"
             />
 
+        <ImageView
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="5dp"
+            android:id="@+id/delete_target"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:src="@mipmap/ic_action_remove"
+            android:onClick="onDelete"/>
     </android.support.v7.widget.CardView>
 
 
