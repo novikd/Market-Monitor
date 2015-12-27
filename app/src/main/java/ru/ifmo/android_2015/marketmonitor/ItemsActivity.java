@@ -99,9 +99,9 @@ public class ItemsActivity extends AppCompatActivity implements SelectedListener
     }
 
     @Override
-    protected void onPause() {
+    protected void onDestroy() {
         unregisterReceiver(receiver);
-        super.onPause();
+        super.onDestroy();
     }
 
     private void onDataUpdate() {

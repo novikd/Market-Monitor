@@ -70,6 +70,13 @@ public class TargetsRecyclerAdapter extends RecyclerView.Adapter<TargetsRecycler
         }
     }
 
+    public void onDeleteClick(Target target) {
+//        int position = 0;
+        int position = targets.indexOf(target);
+        targets.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public void onDeleteClick(int position) {
         //TODO: To show a button for deleting the Target
         targets.remove(position);

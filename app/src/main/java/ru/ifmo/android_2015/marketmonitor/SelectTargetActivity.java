@@ -64,7 +64,7 @@ public class SelectTargetActivity extends AppCompatActivity
         adapter = new TargetsRecyclerAdapter(this);
         adapter.setSelectListener(this);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new RecyclerDividerDecorator(Color.DKGRAY));
+//        recyclerView.addItemDecoration(new RecyclerDividerDecorator(Color.DKGRAY));
 
         if (savedInstanceState != null) {
             fetchTargetsTask = (FetchTargetsTask) getLastCustomNonConfigurationInstance();
@@ -177,7 +177,7 @@ public class SelectTargetActivity extends AppCompatActivity
         int position = (int) v.getTag(R.id.tag_position);
         MarketDB helper = new MarketDB(getApplicationContext());
         helper.deleteTarget(target);
-        adapter.onDeleteClick(position);
+        adapter.onDeleteClick(target);
     }
 
     @Override
