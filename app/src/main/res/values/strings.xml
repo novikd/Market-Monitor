@@ -16,7 +16,12 @@
     <string name = "pref_sync_frequency">Check every...</string>
     <string name="add_target_string">Add</string>
     <string name="settings_string">Settings</string>
-    
+    <string name="add_to_favourites_string">To Favourites</string>
+    <string name="more_info_string">More info</string>
+    <string name="favourites_menu">Favourites</string>
+    <string name="remove_from_favourites_string">Remove from favourites</string>
+    <string name="instruction_string">Here\'s the list of products you\'re intersted in. You can add new items into this list by clicking the + icon.</string>
+
     <string-array name="pref_sync_frequency_values_readable">
         <item>2 mins (debug)</item>
         <item>3 mins (debug)</item>

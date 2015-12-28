@@ -1,9 +1,2 @@
 <resources>
-    <string name="app_name">Market Monitor</string>
-    <string name="title_activity_add_target">AddTargetActivity</string>
-    <string name="add_target_hint">Введите цель</string>
-    <string name="pick_category">Выберите категорию:</string>
-    <string name="add">Добавить</string>
-    <string name="categories_load_error">Не удалось загрузить список категорий</string>
-    <string name="specify_target_error">Необходимо указать цель!</string>
 </resources>

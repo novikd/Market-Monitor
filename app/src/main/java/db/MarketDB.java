@@ -59,6 +59,29 @@ public class MarketDB {
                 new String[]{String.valueOf(target.getId())});
     }
 
+    /**
+     * Deletes the given item by ID value
+     * @param item     Item object
+     */
+    public void deleteItem(Item item) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        deleteItemsForTarget(item.getId(), db);
+
+        db.delete(MarketContract.Items.TABLE, MarketContract.ItemColumns.ITEM_ID + " = ? " +
+                        "AND " + MarketContract.ItemColumns.ITEM_TARGET_ID + " = ?",
+                new String[]{String.valueOf(item.getId()), "0"});
+    }
+
+    public boolean isFavouriteItem(Item item) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        String selectQuery = "SELECT  * FROM " + MarketContract.Items.TABLE + " ti WHERE" +
+                " ti." + MarketContract.ItemColumns.ITEM_TARGET_ID + " = 0 " +
+                "AND " + MarketContract.ItemColumns.ITEM_ID + " = " + String.valueOf(item.getId());
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        return (cursor.getCount() > 0);
+    }
+
     public void deleteAllTargets() {
         SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -97,7 +120,9 @@ public class MarketDB {
                     Target target = new Target(cursor.getString(1));
                     target.setId(cursor.getLong(0));
                     target.setLoaded(cursor.getInt(2) == 1);
-                    targets.add(target);
+                    if (target.getId() > 1) {
+                        targets.add(target);
+                    }
                 }
             }
         } finally {

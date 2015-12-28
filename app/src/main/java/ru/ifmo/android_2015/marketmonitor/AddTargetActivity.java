@@ -139,7 +139,7 @@ public class AddTargetActivity extends AppCompatActivity
         finish();
     }
 
-    static class AddTargetTask extends AsyncTask<Target, Void, Target> {
+    public static class AddTargetTask extends AsyncTask<Target, Void, Target> {
         AddTargetActivity activity;
 
         Target newTarget = null;
