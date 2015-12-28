@@ -28,8 +28,7 @@
                 android:id="@+id/item_image"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
                 android:layout_margin="8dp"
                 />
 

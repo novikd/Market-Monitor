@@ -51,6 +51,10 @@
         <activity
             android:name=".ItemsActivity"
             android:label="@string/title_activity_items" >
+            android:parentActivityName=".SelectTargetActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.ifmo.android_2015.marketmonitor.SelectTargetActivity" />
         </activity>
         <activity
             android:name=".DetailActivity"

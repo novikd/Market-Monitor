@@ -93,6 +93,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(preferenceListener);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void setUpAlarm(int minutes) {
         Intent serviceIntent = new Intent(this, UpdateAllTargetsService.class);
         PendingIntent pIntent = PendingIntent.getService(this, 1, serviceIntent, 0);

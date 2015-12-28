@@ -10,4 +10,8 @@
         android:id="@+id/action_settings"
         android:title="@string/settings_string"
         market_monitor:showAsAction="never"/>
+    <item
+        android:id="@+id/action_favourites"
+        android:title="@string/favourites_menu"
+        market_monitor:showAsAction="ifRoom"/>
 </menu>

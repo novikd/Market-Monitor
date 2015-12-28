@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -53,6 +54,8 @@ public class SelectTargetActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_select_target);
+
+        createTargetForFavourites();
 
         PreferenceManager.setDefaultValues(this, R.xml.preference_screen, false);
 
@@ -115,13 +118,14 @@ public class SelectTargetActivity extends AppCompatActivity
     public static final String TARGET_ID_EXTRA = "targetIdExtra";
     public static final String TARGET_LOADED_EXTRA = "targetLoadedExtra";
     public static final int RELOAD_TARGETS_REQUEST = 100;
-
+    public static final String TARGET_NAME_EXTRA = "targetName";
     @Override
     public void onSelected(Target target) {
         Log.i(TAG, "Target selected: " + target.getName() + " " + String.valueOf(target.isLoaded()));
         Intent intent = new Intent(this, ItemsActivity.class);
         intent.putExtra(TARGET_ID_EXTRA, target.getId());
         intent.putExtra(TARGET_LOADED_EXTRA, target.isLoaded());
+        intent.putExtra(TARGET_NAME_EXTRA, target.getName());
         startActivityForResult(intent, RELOAD_TARGETS_REQUEST);
     }
 
@@ -148,6 +152,12 @@ public class SelectTargetActivity extends AppCompatActivity
                 Log.d(TAG, "Settings clicked");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
+                break;
+            case R.id.action_favourites:
+                Intent intent = new Intent(this, ItemsActivity.class);
+                intent.putExtra(TARGET_ID_EXTRA, 0);
+                intent.putExtra(TARGET_LOADED_EXTRA, true);
+                startActivityForResult(intent, RELOAD_TARGETS_REQUEST);
                 break;
 
         }
@@ -228,6 +238,38 @@ public class SelectTargetActivity extends AppCompatActivity
             if (targetsFetched) {
                 activity.get().targetsAreReady(targets);
             }
+        }
+    }
+
+    private static final String LAUNCHED_BEFORE = "firstLaunch";
+
+    public static final String FAVOURITES_TARGET = "favouritesTarget";
+
+    /**
+     * Creates a target for storing favourite items
+     * on the first launch of the application
+     */
+    private void createTargetForFavourites() {
+        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        boolean launchedBefore = preferences.getBoolean(LAUNCHED_BEFORE, false);
+        if (!launchedBefore) {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void ... params) {
+                    MarketDB db = new MarketDB(getApplicationContext());
+                    Target target = new Target(FAVOURITES_TARGET);
+                    target.setLoaded(true);
+
+                    if (db.addTarget(target)) {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putBoolean(LAUNCHED_BEFORE, true);
+                        editor.commit();
+                        Log.d(TAG, "Favourites target added");
+                    }
+
+                    return null;
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);;
         }
     }
 
